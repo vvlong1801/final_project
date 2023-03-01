@@ -1,7 +1,8 @@
 <script setup>
 import { RouterView } from "vue-router";
 </script>
-
 <template>
-  <router-view></router-view>
+  <div class="bg-guest">
+    <router-view></router-view>
+  </div>
 </template>
