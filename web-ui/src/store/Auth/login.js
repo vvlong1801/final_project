@@ -21,6 +21,7 @@ export const useLogin = defineStore("login", () => {
 
   async function handleSubmit() {
     if (loading.value) return;
+    console.log(form)
 
     loading.value = true;
     errors.value = {};

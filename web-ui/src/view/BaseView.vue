@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps } from "vue";
-import Breadcrumbs from "@/components/Breadcrumbs.vue";
+import Breadcrumbs from "@/components/atoms/Breadcrumbs.vue";
 const props = defineProps(["title", "breadcrumbs"]);
 
 const breadcrumbs = [

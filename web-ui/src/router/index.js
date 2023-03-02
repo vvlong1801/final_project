@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { ADMIN_LAYOUT, GUEST_LAYOUT } from "@/utils/constants";
 
 const auth = (to, from, next) => {
   if (!localStorage.getItem("access_token")) {

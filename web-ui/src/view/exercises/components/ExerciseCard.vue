@@ -1,3 +1,6 @@
+<script setup>
+const props = defineProps(["name", "level", "muscles"]);
+</script>
 <template>
   <div class="card image-full bg-base-100 shadow-xl">
     <figure class="w-full object-cover">
@@ -15,7 +18,7 @@
           </div>
           <div></div>
           <div></div>
-          <div class="text-lg font-semibold">Ganh Dui</div>
+          <div class="text-lg font-semibold">{{ props.name }}</div>
         </div>
         <div class="grid grid-rows-4 items-center justify-end">
           <div class="flex gap-4 text-white">
@@ -30,7 +33,7 @@
           </div>
           <div></div>
           <div></div>
-          <div class="badge badge-primary">easy</div>
+          <div class="badge badge-primary">{{ props.level }}</div>
         </div>
       </div>
     </div>

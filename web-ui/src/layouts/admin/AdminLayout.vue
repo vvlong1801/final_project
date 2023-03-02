@@ -1,5 +1,5 @@
 <script setup>
-import DrawerAdmin from "./partials/DrawerAdmin.vue";
+import Sidebar from "./partials/Sidebar.vue";
 import { RouterView } from "vue-router";
 </script>
 <template>
@@ -17,7 +17,7 @@ import { RouterView } from "vue-router";
       <nav
         class="sidebar-nav h-full flex-1 py-6 overflow-x-hidden overflow-y-auto shadow-2xl"
       >
-        <drawer-admin></drawer-admin>
+        <Sidebar></Sidebar>
       </nav>
     </aside>
     <div

@@ -16,5 +16,5 @@ export function registerGlobalComponents(app) {
     defineAsyncComponent(() => import("@/layouts/GuestLayout.vue"))
   );
 
-  app.component("validation-error", defineAsyncComponent(() => import("@/components/ValidationError.vue")));
+  app.component("validation-error", defineAsyncComponent(() => import("@/components/atoms/ValidationError.vue")));
 }

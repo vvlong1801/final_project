@@ -18,8 +18,9 @@ import {
   faPlus,
   faPencil,
   faTrashCan,
+  faLayerGroup,
 } from "@fortawesome/free-solid-svg-icons";
-library.add([faUserSecret, faPlus, faPencil, faTrashCan]);
+library.add([faUserSecret, faPlus, faPencil, faTrashCan, faLayerGroup]);
 
 const app = createApp(App);
 app.use(router);
