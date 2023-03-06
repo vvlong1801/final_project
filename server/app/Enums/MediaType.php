@@ -2,8 +2,11 @@
 
 namespace App\Enums;
 
+use App\Enums\Traits\Helper;
+
 enum MediaType: int
 {
+    use Helper;
     case test = 0;
     case image = 1;
     case icon = 2;

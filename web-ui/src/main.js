@@ -1,5 +1,19 @@
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
+import "./bootstrap";
+import { createApp } from "vue";
+import "@/styles/main.css";
+import 'primeicons/primeicons.css';
+import App from "./App.vue";
+import router from "./router";
+import { createPinia } from "pinia";
 
-createApp(App).mount('#app')
+import PrimeVue from "primevue/config";
+import ToastService from "primevue/toastservice";
+import { registerGlobalComponents } from "./utils/import";
+
+const app = createApp(App);
+app.use(router);
+app.use(createPinia());
+app.use(PrimeVue);
+app.use(ToastService);
+registerGlobalComponents(app);
+app.mount("#app");

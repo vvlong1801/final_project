@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('mediable_id');
             $table->string('collection_name')->comment('0: test, 1: avatars, 2: muscles, 3: equipments, 4: challenges, 5: exercises, 6: plans, 7: musics');
             $table->string('name')->nullable();
-            $table->string('url');
+            $table->string('url')->nullable();
             $table->integer('type')->comment('0: test, 1: image, 2: icon, 3: gif, 4: video, 5: music');
             $table->string('disk')->comment('0: test, 1: s3, 2: public, 3: s3-tmp');
             $table->string('conversions_disk')->nullable();

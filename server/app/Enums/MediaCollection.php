@@ -2,8 +2,12 @@
 
 namespace App\Enums;
 
+use App\Enums\Traits\Helper;
+
 enum MediaCollection: string
 {
+    use Helper;
+
     case test = 'tests';
     case avatar = 'avatars';
     case muscle = 'muscles';

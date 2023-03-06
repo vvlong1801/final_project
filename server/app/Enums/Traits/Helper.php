@@ -21,6 +21,7 @@ trait Helper
                 return $case->name;
             }
         }
+        return null;
     }
 
     public static function fromName(string $name)

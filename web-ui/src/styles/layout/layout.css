@@ -1,0 +1,25 @@
+@import url('./mixin.css');
+@import url('./sidebar.css');
+
+@layer components {
+    .layout-topbar {
+        @apply fixed z-50 h-20 left-0 top-0 w-full px-8 py-0 transition duration-200 items-center flex shadow-lg bg-white;
+    }
+
+    .layout-topbar-logo {
+        @apply flex items-center text-2xl font-medium w-80 mr-6;
+    }
+
+    .layout-topbar-button {
+        @apply inline-flex justify-center items-center relative text-zinc-500 w-12 h-12 cursor-pointer;
+
+    }
+
+    .layout-topbar-button>i {
+        @apply text-2xl font-medium;
+    }
+
+    .layout-main-container {
+        @apply flex flex-col min-h-screen justify-between ml-80 pl-16 pr-8 pt-28 pb-8;
+    }
+}

@@ -9,6 +9,9 @@ class AppServiceProvider extends ServiceProvider
 {
     protected $bindingServices = [
         Services\Interfaces\ExerciseServiceInterface::class => Services\ExerciseService::class,
+        Services\Interfaces\EquipmentServiceInterface::class => Services\EquipmentService::class,
+        Services\Interfaces\MuscleServiceInterface::class => Services\MuscleService::class,
+        Services\Interfaces\MediaServiceInterface::class => Services\LocalService::class,
     ];
     /**
      * Register any application services.
