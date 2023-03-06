@@ -14,20 +14,23 @@ trait Helper
         return array_map(fn ($case) => $case->name, self::cases());
     }
 
-    public static function fromValue($value)
+    public static function fromValue(string $value)
     {
         foreach (self::cases() as $case) {
-            if ($case->value === $value) {
+            if ($case->value == $value) {
                 return $case->name;
             }
         }
+        return false;
     }
 
-    public static function fromName(string $name)
+    public static function fromName($name)
     {
         foreach (self::cases() as $case) {
             if ($case->name === $name) return $case->value;
         }
+
+        return false;
     }
 
     public static function toOptions()

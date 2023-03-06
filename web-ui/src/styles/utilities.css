@@ -1,0 +1,18 @@
+@import url('./theme/tailwind-light/theme.css');
+
+@layer components {
+    .card {
+        @apply bg-white border rounded-xl shadow-md p-6;
+    }
+
+    .p-dataview-content > .grid-nogutter {
+        @apply !grid-flow-col;
+    }
+    .masker {
+        @apply bg-primary-500 opacity-90 z-10;
+    }
+
+    .textarea-restyle {
+        @apply border border-primary-700 rounded-md active:border-2 active:border-primary-700 w-full p-2;
+    }
+}

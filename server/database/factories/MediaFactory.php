@@ -22,7 +22,7 @@ class MediaFactory extends Factory
             'type' => 0,
             'disk' => 0,
             'name' => fake()->text(10),
-            'url' => fake()->url(),
+            'path' => fake()->url(),
             'status' => CommonStatus::active,
         ];
     }
