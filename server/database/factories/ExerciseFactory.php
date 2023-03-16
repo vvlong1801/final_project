@@ -24,8 +24,8 @@ class ExerciseFactory extends Factory
             'kcal' => random_int(10, 100) * 0.1,
             'mode_time' => random_int(5, 50),
             'description' => fake()->text(100),
-            'gif_url' => fake()->url(),
-            'video_url' => fake()->url(),
+            // 'gif_url' => fake()->url(),
+            // 'video_url' => fake()->url(),
         ];
     }
 }

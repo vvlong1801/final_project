@@ -24,8 +24,8 @@ return new class extends Migration
             $table->integer('mode_time');
             $table->integer('star')->default(0);
             $table->string('description')->nullable();
-            $table->string('gif_url')->nullable();
-            $table->string('video_url')->nullable();
+            // $table->integer('gif_url')->nullable();
+            // $table->integer('video_url')->nullable();
             $table->timestamps();
         });
     }
