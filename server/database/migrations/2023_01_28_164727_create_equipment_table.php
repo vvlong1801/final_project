@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('equipment', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('icon')->nullable();
-            $table->string('image')->nullable();
+            $table->string('icon_href')->nullable();
+            // $table->string('image')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
         });

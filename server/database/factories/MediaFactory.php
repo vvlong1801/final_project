@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Image>
  */
-class ImageFactory extends Factory
+class MediaFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,6 +18,9 @@ class ImageFactory extends Factory
     public function definition()
     {
         return [
+            'collection_name' => 'tests',
+            'type' => 0,
+            'disk' => 0,
             'name' => fake()->text(10),
             'url' => fake()->url(),
             'status' => CommonStatus::active,
