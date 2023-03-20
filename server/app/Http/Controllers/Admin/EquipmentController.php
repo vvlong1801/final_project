@@ -6,14 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreEquipmentRequest;
 use App\Http\Resources\EquipmentResource;
 use App\Services\Interfaces\EquipmentServiceInterface;
-
+use App\Services\Interfaces\MediaServiceInterface;
 
 class EquipmentController extends Controller
 {
     protected $equipmentService;
-    public function __construct(EquipmentServiceInterface $equipmentService)
+    protected $mediaService;
+    public function __construct(EquipmentServiceInterface $equipmentService, MediaServiceInterface $mediaService)
     {
         $this->equipmentService = $equipmentService;
+        $this->mediaService = $mediaService;
     }
 
     public function index()
@@ -25,22 +27,35 @@ class EquipmentController extends Controller
     public function create(StoreEquipmentRequest $request)
     {
         $payload = $request->validated();
-        $equipment = $this->equipmentService->createEquipment($payload);
+        $image = \Arr::get($payload, 'image', false);
+        $icon = \Arr::get($payload, 'icon', false);
 
-        return $this->getResponse(new EquipmentResource($equipment), 'create equipment is success!');
+        $payload['image'] = $image ? $this->mediaService->createMedia($image) : null;
+        $payload['icon'] = $icon ? $this->mediaService->createMedia($icon) : null;
+
+        if ($payload['image'] !== null) {
+            $equipment = $this->equipmentService->createEquipment($payload);
+            return $this->getResponse(new EquipmentResource($equipment), 'create equipment is success!');
+        } else {
+            abort(422, 'image not found');
+        }
     }
 
     public function update($id, StoreEquipmentRequest $request)
     {
         $payload = $request->validated();
-        $muscle = $this->equipmentService->updateEquipment($id, $payload);
-        return $this->getResponse($muscle, 'update muscle is success!');
-    }
+        $image = \Arr::get($payload, 'image', false);
+        $icon = \Arr::get($payload, 'icon', false);
+        $payload['image'] = $image ? $this->mediaService->createMedia($image) : null;
+        $payload['icon'] = $icon ? $this->mediaService->createMedia($icon) : null;
+
+        $equipment = $this->equipmentService->updateEquipment($id, $payload);
+        return $this->getResponse(new EquipmentResource($equipment), 'update equipment is success!');    }
 
     public function delete($id)
     {
         $this->equipmentService->deleteEquipment($id);
 
-        return $this->getResponse(null, 'delete muscle is success!');
+        return $this->getResponse(null, 'delete equipment is success!');
     }
 }

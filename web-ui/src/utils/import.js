@@ -28,6 +28,10 @@ export function registerGlobalComponents(app) {
     "Toast",
     defineAsyncComponent(() => import("primevue/toast"))
   );
+  app.component(
+    "Message",
+    defineAsyncComponent(() => import("primevue/message"))
+  );
 
   //==========media==========
   app.component(

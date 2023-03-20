@@ -1,10 +1,10 @@
 <script setup>
-import { defineProps, onUnmounted } from "vue";
+import { defineProps } from "vue";
 import { useMuscle } from "@/stores/muscle.js";
 import FileUpload from "primevue/fileupload";
 import { useToast } from "primevue/usetoast";
 
-const { form, resetForm, createMuscle, editMuscle } = useMuscle();
+const { form, createMuscle, editMuscle } = useMuscle();
 const toast = useToast();
 const props = defineProps({
   visible: {

@@ -51,7 +51,6 @@ const openEditModal = (equipment) => {
           <Toast />
           <form-equipment
             v-model:visible="visibleModal"
-            :header-title="modalTitle"
             :form-type="modalType"
           />
         </div>
@@ -90,7 +89,7 @@ const openEditModal = (equipment) => {
                 ></div>
               </div>
             </Transition>
-            <Image :src="equipment.image" imageClass="w-full" />
+            <Image :src="equipment.image.url" imageClass="w-full" />
           </div>
           <p class="truncate px-2">{{ equipment.name }}</p>
         </div>
