@@ -2,28 +2,75 @@
 
 namespace App\Services;
 
+use App\Enums\CommonStatus;
 use App\Enums\MediaCollection;
-use App\Enums\MediaDisk;
+use App\Enums\MediaType;
+use App\Models\Media;
 use App\Services\Interfaces\MediaServiceInterface;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 
 class LocalService extends BaseService implements MediaServiceInterface
 {
-    public function getTemporaryUrl($path)
+    protected Filesystem $tempDisk;
+    protected Filesystem $disk;
+
+    public function __construct()
     {
-        $disk = Storage::disk(MediaDisk::public);
-        if (($path !== null) && $disk->exists($path)) {
-            return $disk->url($path);
-        } else return null;
+        $this->tempDisk = Storage::disk('public');
+        $this->disk = Storage::disk('local');
     }
 
-    public function upload($file, $collection)
+    public function getUrl($diskType, $path)
     {
-        $collectionName = in_array($collection, MediaCollection::getValues()) ? MediaCollection::fromValue($collection) : null;
-        if ($collectionName) {
-            return $file->store($collectionName, MediaDisk::public);
+        if ($diskType === 'local') {
+            $this->disk->copy($path, 'public/' . $path);
+        }
+        return $this->tempDisk->url($path);
+    }
+
+    public function upload(array $payload)
+    {
+        $file = \Arr::get($payload, 'file', false);
+        $collection = \Arr::get($payload, 'collection', false);
+        $type = \Arr::get($payload, 'type', false);
+
+        //save to temporary disk
+        if ($file && $collection && $type) {
+            $filename = $file->getClientOriginalName();
+            $collectionName = MediaCollection::fromName($collection);
+            $path =  $this->tempDisk->putFile($collectionName, $file);
+            $typeValue = MediaType::fromName($type);
+            return new Media([
+                'path' => $path,
+                'name' => $filename,
+                'collection_name' => $collection,
+                'type' => $typeValue,
+                'disk' => 'public',
+            ]);
         } else {
             return null;
         }
+    }
+
+    public function createMedia($file)
+    {
+        $path = \Arr::get($file, 'path', false);
+        $filename = \Arr::get($file, 'filename', false);
+        $type = \Arr::get($file, 'type', false);
+
+        if ($path && $this->tempDisk->exists($path) && $filename) {
+            $newPath = $file['collection'] . '/' . uniqid() . '-' . $filename;
+            $typeValue = MediaType::fromName($type);
+            $this->disk->copy('public/' . $path, $newPath);
+            return new Media([
+                'name' => $filename,
+                'path' => $newPath,
+                'type' => $typeValue,
+                'collection_name' => $file['collection'],
+                'status' => CommonStatus::comming->value,
+                'disk' => 'local'
+            ]);
+        } else return null;
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UploadRequest;
+use App\Http\Resources\MediaResource;
 use App\Services\Interfaces\MediaServiceInterface;
 
 class MediaController extends Controller
@@ -18,9 +19,10 @@ class MediaController extends Controller
      */
     public function upload(UploadRequest $request)
     {
-        $input = $request->validated();
-        $path = $this->mediaService->upload($input['image'], $input['collection']);
-        return response()->json(["path" => $path]);
+        $payload = $request->validated();
+        $media = $this->mediaService->upload($payload);
+
+        return $this->getResponse(new MediaResource($media), 'upload is success');
     }
 
     public function getTempUrl(String $collection, String $filename)

@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Muscle;
 use App\Services\Interfaces\MuscleServiceInterface;
-use App\Supports\S3Helper;
 
 class MuscleService extends BaseService implements MuscleServiceInterface
 {
@@ -20,18 +19,31 @@ class MuscleService extends BaseService implements MuscleServiceInterface
 
     public function createMuscle(array $payload)
     {
-        // if ($image = \Arr::get($payload, 'image', '')) {
-        //     S3Helper::moveTempToLegalBucket($image);
-        // }
-        // if ($icon = \Arr::get($payload, 'icon', '')) {
-        //     S3Helper::moveTempToLegalBucket($icon);
-        // }
-        return Muscle::create($payload);
+
+        $muscle = Muscle::create(\Arr::only($payload, ['name', 'description']));
+
+        $muscle->image()->save($payload['image']);
+
+        if ($payload['icon']) {
+            $muscle->icon()->save($payload['icon']);
+        }
+        return $muscle;
     }
 
     public function updateMuscle($id, array $payload)
     {
-        return Muscle::where('id', $id)->update($payload);
+        $muscle = Muscle::find($id);
+        $muscle->name = \Arr::get($payload, 'name', '');
+        $muscle->description = \Arr::get($payload, 'description', '');
+        $muscle->save();
+        if ($image = \Arr::get($payload, 'image', false)) {
+            $muscle->image()->save($image);
+        }
+        if ($icon = \Arr::get($payload, 'icon', false)) {
+            $muscle->icon()->save($icon);
+        }
+
+        return $muscle;
     }
 
     public function deleteMuscle($id)

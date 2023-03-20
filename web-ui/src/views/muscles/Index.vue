@@ -83,7 +83,7 @@ const openEditModal = (muscle) => {
                 ></div>
               </div>
             </Transition>
-            <Image :src="muscle.image" imageClass="w-full" />
+            <Image :src="muscle.image.url" imageClass="w-full" />
           </div>
           <p class="truncate px-2">{{ muscle.name }}</p>
         </div>

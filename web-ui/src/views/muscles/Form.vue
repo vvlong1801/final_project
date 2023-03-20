@@ -23,7 +23,7 @@ const props = defineProps({
 const emits = defineEmits(["update:visible"]);
 
 const onSubmit = () => {
-  if (props.formType.value.toLowerCase() == "create") {
+  if (props.formType.toLowerCase() == "create") {
     createMuscle();
   } else editMuscle();
   emits("update:visible", false);
@@ -33,8 +33,9 @@ const onUpload = async (event) => {
   const file = event.files[0];
 
   const formData = new FormData();
-  formData.append("image", file);
+  formData.append("file", file);
   formData.append("collection", "muscles");
+  formData.append("type", "image");
 
   try {
     const res = await window.axios.post("upload", formData, {
@@ -43,7 +44,7 @@ const onUpload = async (event) => {
       },
     });
 
-    form.image = res.data.path || res.data.data.path;
+    form.image = res.data.data || res.data;
 
     toast.add({
       severity: "success",
@@ -90,7 +91,7 @@ const onUpload = async (event) => {
           :auto="true"
           @uploader="onUpload"
           :upload-icon="form.image ? '' : 'pi pi-fw pi-upload'"
-          :choose-label="form.image"
+          :choose-label="form.image?.filename"
           class="w-40"
         >
         </FileUpload>
@@ -104,7 +105,7 @@ const onUpload = async (event) => {
           :auto="true"
           @uploader="onUpload"
           :upload-icon="form.icon ? '' : 'pi pi-fw pi-upload'"
-          :choose-label="form.icon"
+          :choose-label="form.icon?.filename"
           class="w-40"
         />
       </div>

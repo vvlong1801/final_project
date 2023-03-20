@@ -2,6 +2,8 @@
 
 namespace App\Services\Interfaces;
 
+use App\Models\Muscle;
+
 interface MuscleServiceInterface
 {
     public function getMuscles();

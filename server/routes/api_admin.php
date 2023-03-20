@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BaseController;
 use App\Http\Controllers\Admin\EquipmentController;
 use App\Http\Controllers\Admin\ExerciseController;
+use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MuscleController;
 use App\Http\Controllers\Admin\UploadController;
 

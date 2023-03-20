@@ -10,8 +10,8 @@ export const useMuscle = defineStore("muscle", () => {
 
   const form = reactive({
     name: "",
-    image: "",
-    icon: "",
+    image: null,
+    icon: null,
     description: "",
   });
 
@@ -26,8 +26,8 @@ export const useMuscle = defineStore("muscle", () => {
 
   const resetForm = () => {
     form.name = "";
-    form.image = "";
-    form.icon = "";
+    form.image = null;
+    form.icon = null;
     form.description = "";
     editId.value = null;
   };

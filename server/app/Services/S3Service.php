@@ -2,26 +2,77 @@
 
 namespace App\Services;
 
+use App\Enums\CommonStatus;
 use App\Enums\MediaCollection;
-use App\Enums\MediaDisk;
 use App\Enums\MediaType;
-use App\Enums\UploadCollection;
+use App\Models\Media;
 use App\Services\Interfaces\MediaServiceInterface;
-
+use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Storage;
 
 class S3Service extends BaseService implements MediaServiceInterface
 {
-    public function getTemporaryUrl($path)
+    protected Filesystem $tempDisk;
+    protected Filesystem $disk;
+
+    public function __construct()
     {
+        $this->tempDisk = Storage::disk('s3-tmp');
+        $this->disk = Storage::disk('s3');
     }
 
-    public function upload($file, $collection)
+    public function getUrl($diskType, string $path)
     {
-        $collectionLabel = in_array($collection, MediaCollection::getValues()) ? MediaCollection::fromValue($collection) : null;
-        if ($collectionLabel) {
-            return $file->store($collectionLabel, MediaDisk::temporaryS3);
+        return $diskType == 's3' ? $this->disk->temporaryUrl($path, now()->addDay()) : $this->tempDisk->temporaryUrl($path, now()->addDay());
+    }
+
+    public function upload($payload)
+    {
+        $file = \Arr::get($payload, 'file', false);
+        $collection = \Arr::get($payload, 'collection', false);
+        $type = \Arr::get($payload, 'type', false);
+        if ($file && $collection && $type) {
+            $filename = $file->getClientOriginalName();
+            $collectionName = MediaCollection::fromName($collection);
+            $path =  $this->tempDisk->putFile($collectionName, $file);
+            $typeValue = MediaType::fromName($type);
+            return new Media([
+                'path' => $path,
+                'name' => $filename,
+                'collection_name' => $collection,
+                'type' => $typeValue,
+                'disk' => 's3-tmp',
+            ]);
         } else {
             return null;
         }
+    }
+
+    public function createMedia($file)
+    {
+        $path = \Arr::get($file, 'path', false);
+        $filename = \Arr::get($file, 'filename', false);
+        $type = \Arr::get($file, 'type', false);
+
+        if ($path && $this->tempDisk->exists($path) && $filename) {
+            $newPath = $file['collection'] . '/' . uniqid() . '-' . $filename;
+            $typeValue = MediaType::fromName($type);
+
+            $result = $this->disk->getClient()->copyObject([
+                'Bucket' => env('AWS_BUCKET'),
+                'CopySource' => env('AWS_BUCKET_TMP') . '/' . $path,
+                'Key' => $newPath,
+            ]);
+            if ($result['@metadata']['statusCode'] == 200) {
+                return new Media([
+                    'name' => $filename,
+                    'path' => $newPath,
+                    'type' => $typeValue,
+                    'collection_name' => $file['collection'],
+                    'status' => CommonStatus::comming->value,
+                    'disk' => 's3'
+                ]);
+            } else return null;
+        } else return null;
     }
 }

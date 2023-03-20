@@ -9,6 +9,8 @@ class Media extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function mediable()
     {
         return $this->morphTo();
