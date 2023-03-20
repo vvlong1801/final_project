@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\ExerciseResource;
 use App\Models\Exercise;
 use App\Services\Interfaces\ExerciseServiceInterface;
 use Illuminate\Http\Request;
 
-class ExerciseController extends BaseController
+class ExerciseController extends Controller
 {
     protected $exerciseService;
 

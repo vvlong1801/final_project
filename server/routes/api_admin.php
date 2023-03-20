@@ -3,7 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\BaseController;
+use App\Http\Controllers\Admin\EquipmentController;
 use App\Http\Controllers\Admin\ExerciseController;
+use App\Http\Controllers\Admin\MediaController;
+use App\Http\Controllers\Admin\MuscleController;
+use App\Http\Controllers\Admin\UploadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,9 +30,25 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     //=============== Auth ===============
     Route::post('/logout', [AuthController::class, 'logout']);
-    //=============== User ===============
+
+    //=============== Upload file ===============
+    // Route::get('/upload-temporary/{collection}', [BaseController::class, 'getUploadTemporaryUrl']);
+    Route::get('/temporary-url/{collection}/{filename}', [MediaController::class, 'getTempUrl']);
+    Route::post('/upload', [MediaController::class, 'upload']);
+    //=============== User ===================
     //=============== Exercise ===============
     Route::get('/exercises', [ExerciseController::class, 'index']);
+    //=============== Equipments ===============
+    Route::get('/equipments', [EquipmentController::class, 'index']);
+    Route::post('/equipments', [EquipmentController::class, 'create']);
+    Route::put('/equipments/{id}', [EquipmentController::class, 'update']);
+    Route::delete('/equipments/{id}', [EquipmentController::class, 'delete']);
+
+    //=============== Muscles ===============
+    Route::get('/muscles', [MuscleController::class, 'index']);
+    Route::post('/muscles', [MuscleController::class, 'create']);
+    Route::put('/muscles/{id}', [MuscleController::class, 'update']);
+    Route::delete('/muscles/{id}', [MuscleController::class, 'delete']);
 
     //=============== Challenge ===============
     Route::get('/challenges', [ChallengeController::class, 'index']);
