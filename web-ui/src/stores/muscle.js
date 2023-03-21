@@ -40,14 +40,14 @@ export const useMuscle = defineStore("muscle", () => {
     editId.value = data.id;
   };
 
-  function getMuscles() {
+  const getMuscles = () => {
     return window.axios
       .get("muscles")
       .then((res) => {
         muscles.value = res.data.data;
       })
       .catch((err) => {});
-  }
+  };
 
   const createMuscle = () => {
     return window.axios
@@ -80,7 +80,8 @@ export const useMuscle = defineStore("muscle", () => {
       .delete(`muscles/${id}`)
       .then((res) => {
         getMuscles();
-        showToast("success", res.message);      })
+        showToast("success", res.message);
+      })
       .catch((err) => {
         showToast("error", err.message);
       });

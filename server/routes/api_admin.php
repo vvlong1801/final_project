@@ -37,7 +37,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/upload', [MediaController::class, 'upload']);
     //=============== User ===================
     //=============== Exercise ===============
-    Route::get('/exercises', [ExerciseController::class, 'index']);
+    Route::get('/exercises/find/{id}', [ExerciseController::class, 'findById']);
+    Route::get('/exercises/{per_page?}', [ExerciseController::class, 'index']);
+    Route::post('/exercises/delete', [ExerciseController::class, 'delete']);
+    Route::post('/exercises', [ExerciseController::class, 'create']);
+    Route::put('/exercises/{id}', [ExerciseController::class, 'update']);
     //=============== Equipments ===============
     Route::get('/equipments', [EquipmentController::class, 'index']);
     Route::post('/equipments', [EquipmentController::class, 'create']);

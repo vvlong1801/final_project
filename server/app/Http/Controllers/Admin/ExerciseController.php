@@ -3,28 +3,50 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\DeleteExerciseRequest;
+use App\Http\Requests\Admin\StoreExerciseRequest;
 use App\Http\Resources\ExerciseResource;
 use App\Models\Exercise;
 use App\Services\Interfaces\ExerciseServiceInterface;
+use App\Services\Interfaces\MediaServiceInterface;
 use Illuminate\Http\Request;
 
 class ExerciseController extends Controller
 {
     protected $exerciseService;
+    protected $mediaService;
 
-    public function __construct(ExerciseServiceInterface $exerciseService)
+    public function __construct(ExerciseServiceInterface $exerciseService, MediaServiceInterface $mediaService)
     {
-        // parent::__construct();
         $this->exerciseService = $exerciseService;
+        $this->mediaService = $mediaService;
     }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($perPage = 0)
     {
-        return ExerciseResource::collection($this->exerciseService->getExercisesWithPagination());
+        if ($perPage) {
+            $exercises = $this->exerciseService->getExercisesWithPagination($perPage);
+        } else {
+            $exercises = $this->exerciseService->getExercises();
+        }
+        return $this->getResponse(ExerciseResource::collection($exercises), 'get exercises is success');
+        // ExerciseResource::collection($exercises)
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function findById($id)
+    {
+        $exercise = $this->exerciseService->getExerciseById($id);
+        return $this->getResponse(new ExerciseResource($exercise), 'get exercises is success');
+        // ExerciseResource::collection($exercises)
     }
 
     /**
@@ -32,42 +54,19 @@ class ExerciseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(StoreExerciseRequest $request)
     {
-        //
-    }
+        $payload = $request->validated();
+        $gif = \Arr::get($payload, 'gif', false);
+        $video = \Arr::get($payload, 'video', false);
+        $image = \Arr::get($payload, 'image', false);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $payload['gif'] = $gif ? $this->mediaService->createMedia($gif) : null;
+        $payload['video'] = $video ? $this->mediaService->createMedia($video) : null;
+        $payload['image'] = $image ? $this->mediaService->createMedia($image) : null;
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $exercise = $this->exerciseService->createExercise($payload);
+        return $this->getResponse(new ExerciseResource($exercise), 'muscle created');
     }
 
     /**
@@ -77,9 +76,18 @@ class ExerciseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update($id, StoreExerciseRequest $request)
     {
-        //
+        $payload = $request->validated();
+        $gif = \Arr::get($payload, 'gif', false);
+        $video = \Arr::get($payload, 'video', false);
+        $image = \Arr::get($payload, 'image', false);
+
+        $payload['gif'] = $gif ? $this->mediaService->createMedia($gif) : null;
+        $payload['video'] = $video ? $this->mediaService->createMedia($video) : null;
+        $payload['image'] = $image ? $this->mediaService->createMedia($image) : null;
+        $exercise = $this->exerciseService->updateExercise($id, $payload);
+        return $this->getResponse(new ExerciseResource($exercise), 'muscle updated');
     }
 
     /**
@@ -88,8 +96,14 @@ class ExerciseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function delete(DeleteExerciseRequest $request)
     {
-        //
+        $ids = \Arr::get($request->validated(), 'ids', []);
+        try {
+            $this->exerciseService->deleteExercise($ids);
+            return $this->getResponse(null, 'muscle deleted', 204);
+        } catch (\Throwable $th) {
+            abort(400, 'delete exercise is error');
+        }
     }
 }

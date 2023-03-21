@@ -38,8 +38,8 @@ const openEditModal = (muscle) => {
 <template>
   <base-view title="Muscles">
     <div class="card flex flex-col space-y-6 min-h-full">
-      <div class="flex justify-between border-y p-4 bg-zinc-100">
-        <div class="page-action flex">
+      <Toolbar>
+        <template #start>
           <Button
             icon="pi pi-plus"
             class="p-button-rounded p-button-primary !bg-primary-500 !border-none"
@@ -47,12 +47,15 @@ const openEditModal = (muscle) => {
           />
           <Toast />
           <form-muscle v-model:visible="visibleModal" :form-type="modalType" />
-        </div>
-        <span class="p-input-icon-left">
-          <i class="pi pi-search" />
-          <InputText type="text" v-model="searchKey" placeholder="Search" />
-        </span>
-      </div>
+        </template>
+        <template #end>
+          <span class="p-input-icon-left">
+            <i class="pi pi-search" />
+            <InputText type="text" v-model="searchKey" placeholder="Search" />
+          </span>
+        </template>
+      </Toolbar>
+
       <div class="p-4 grid grid-flow-row grid-cols-12 gap-4">
         <div
           class="space-y-1 text-center"

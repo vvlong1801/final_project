@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Level;
+use App\Enums\MediaType;
 use App\Enums\TypeExercise;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,6 +14,10 @@ class Exercise extends Model
     use HasFactory;
 
     protected $guarded = [];
+    // protected $casts = [
+    //     'type' => TypeExercise::class,
+    //     'level' => Level::class,
+    // ];
 
     //=========== convert attribute ============
     //==========================================
@@ -48,6 +53,21 @@ class Exercise extends Model
     public function equipment()
     {
         return $this->belongsTo(Equipment::class);
+    }
+
+    public function image()
+    {
+        return $this->morphOne(Media::class, 'mediable')->whereType(MediaType::image);
+    }
+
+    public function gif()
+    {
+        return $this->morphOne(Media::class, 'mediable')->whereType(MediaType::gif);
+    }
+
+    public function video()
+    {
+        return $this->morphOne(Media::class, 'mediable')->whereType(MediaType::video);
     }
 
     public function muscles()

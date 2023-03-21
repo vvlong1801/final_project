@@ -16,11 +16,23 @@ export function registerGlobalComponents(app) {
     "Textarea",
     defineAsyncComponent(() => import("primevue/textarea"))
   );
+  app.component(
+    "Dropdown",
+    defineAsyncComponent(() => import("primevue/dropdown"))
+  );
+  app.component(
+    "MultiSelect",
+    defineAsyncComponent(() => import("primevue/multiselect"))
+  );
 
   //==========data==========
   app.component(
     "DataView",
     defineAsyncComponent(() => import("primevue/dataview"))
+  );
+  app.component(
+    "Paginator",
+    defineAsyncComponent(() => import("primevue/paginator"))
   );
 
   //==========message==========
@@ -39,9 +51,20 @@ export function registerGlobalComponents(app) {
     defineAsyncComponent(() => import("primevue/image"))
   );
 
+  //==========panel==========
+  app.component(
+    "Toolbar",
+    defineAsyncComponent(() => import("primevue/toolbar"))
+  );
+
   //==========overlay==========
   app.component(
     "Dialog",
     defineAsyncComponent(() => import("primevue/dialog"))
+  );
+
+  app.component(
+    "ConfirmDialog",
+    defineAsyncComponent(() => import("primevue/confirmdialog"))
   );
 }

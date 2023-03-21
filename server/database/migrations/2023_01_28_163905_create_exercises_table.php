@@ -18,14 +18,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('level')->default(Level::easy->value);
-            $table->double('kcal');
             $table->integer('type')->comment('0: counter, 1: timer, 2: runner')->default(0);
             $table->integer('equipment_id')->nullable();
-            $table->integer('mode_time');
             $table->integer('star')->default(0);
             $table->string('description')->nullable();
-            // $table->integer('gif_url')->nullable();
-            // $table->integer('video_url')->nullable();
             $table->timestamps();
         });
     }
