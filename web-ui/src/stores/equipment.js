@@ -5,8 +5,10 @@ import { useToast } from "primevue/usetoast";
 // const route = useRouter();
 export const useEquipment = defineStore("equipment", () => {
   const toast = useToast();
-  const editId = ref(null);
   const equipments = ref([]);
+  const editId = ref(null);
+  const errors = ref(null);
+
   const form = reactive({
     name: "",
     image: "",
@@ -35,36 +37,46 @@ export const useEquipment = defineStore("equipment", () => {
     form.name = "";
     form.image = "";
     form.icon = "";
+    form.description = "";
+    editId.value = null;
   };
-
-  const createEquipment = () => {
-    return window.axios
-      .post("equipments", form)
-      .then((res) => {
-        getEquipments();
-        showToast("success", "Equipment Created");
-      })
-      .catch((err) => {})
-      .finally(resetForm);
-  };
-
   function getEquipments() {
     return window.axios
       .get("equipments")
       .then((res) => {
         equipments.value = res.data.data;
       })
-      .catch((err) => {});
+      .catch((err) => {
+        showToast("error", err.message);
+      });
   }
+
+  const createEquipment = () => {
+
+    return window.axios
+      .post("equipments", form)
+      .then((res) => {
+        getEquipments();
+        showToast("success", res.data.message);
+      })
+      .catch((err) => {
+        errors.value = err.response.data;
+        showToast("error", err.response.data.message);
+      })
+      .finally(resetForm);
+  };
 
   const editEquipment = () => {
     return window.axios
       .put(`equipments/${editId.value}`, form)
-      .then(() => {
+      .then((res) => {
         getEquipments();
-        showToast("success", "Equipment Updated");
+        showToast("success", res.data.message);
       })
-      .catch((err) => {})
+      .catch((err) => {
+        errors.value = err.response.data;
+        showToast("error", err.response.data.message);
+      })
       .finally(resetForm);
   };
 
@@ -73,13 +85,17 @@ export const useEquipment = defineStore("equipment", () => {
       .delete(`equipments/${id}`)
       .then((res) => {
         getEquipments();
-        showToast("success", "Equipment Deleted");
+        showToast("success", res.data.message);
       })
-      .catch((err) => {});
+      .catch((err) => {
+        errors.value = err.response.data;
+        showToast("error", err.response.data.message);
+      });
   }
 
   return {
     form,
+    errors,
     fillForm,
     resetForm,
     editEquipment,

@@ -54,9 +54,11 @@ export const useMuscle = defineStore("muscle", () => {
       .post("muscles", form)
       .then((res) => {
         getMuscles();
-        showToast("success", "Muscle Created");
+        showToast("success", res.message);
       })
-      .catch((err) => {})
+      .catch((err) => {
+        showToast("error", err.message);
+      })
       .finally(resetForm);
   };
 
@@ -65,9 +67,11 @@ export const useMuscle = defineStore("muscle", () => {
       .put(`muscles/${editId.value}`, form)
       .then(() => {
         getMuscles();
-        showToast("success", "Muscle Updated");
+        showToast("success", res.message);
       })
-      .catch((err) => {})
+      .catch((err) => {
+        showToast("error", err.message);
+      })
       .finally(resetForm);
   };
 
@@ -76,9 +80,10 @@ export const useMuscle = defineStore("muscle", () => {
       .delete(`muscles/${id}`)
       .then((res) => {
         getMuscles();
-        showToast("success", "Muscle Deleted");
-      })
-      .catch((err) => {});
+        showToast("success", res.message);      })
+      .catch((err) => {
+        showToast("error", err.message);
+      });
   }
 
   return {
