@@ -4,9 +4,10 @@ namespace App\Services\Interfaces;
 
 interface ExerciseServiceInterface
 {
-    public function importMuscle($file);
-
-    public function update(array $update);
-
-    public function getExercisesWithPagination();
+    public function getExercises();
+    public function getExerciseById($id);
+    public function getExercisesWithPagination($perPage);
+    public function createExercise(array $payload);
+    public function updateExercise($id, array $payload);
+    public function deleteExercise($id);
 }

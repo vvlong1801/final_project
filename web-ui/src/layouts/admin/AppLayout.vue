@@ -4,7 +4,7 @@ import AppTopbar from "./partials/AppTopbar.vue";
 import AppSidebar from "./partials/AppSidebar.vue";
 </script>
 <template>
-  <div class="layout-wrapper bg-zinc-100">
+  <div class="layout-wrapper">
     <app-topbar></app-topbar>
     <div class="layout-sidebar">
       <app-sidebar></app-sidebar>
