@@ -2,11 +2,13 @@
 
 namespace App\Services\Interfaces;
 
-use App\Models\Challenge;
 
 interface ChallengeServiceInterface
 {
-    public function getAll();
-    public function findById(int $id);
-    public function create(Challenge $challenge, array $exercises);
+    public function getChallenges();
+    public function getChallengeTypes();
+    public function getChallengeById($id);
+    public function createChallenge(array $payload);
+    public function updateChallenge($id, array $payload);
+    public function deleteChallenge($id);
 }

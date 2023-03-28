@@ -19,9 +19,9 @@ class ChallengeSeeder extends Seeder
      */
     public function run()
     {
-        $types = ChallengeType::factory()->count(3)->sequence(fn ($sequence) => ['title' => 'challenge_type_' . $sequence->index])->create();
+        $types = ChallengeType::factory()->count(3)->sequence(fn ($sequence) => ['name' => 'challenge_type_' . $sequence->index])->create();
         $challenges = Challenge::factory()->count(5)
-            ->sequence(fn ($sequence) => ['title' => 'challenge_' . $sequence->index, 'type_id' => $types->random()])
+            ->sequence(fn ($sequence) => ['name' => 'challenge_' . $sequence->index, 'type_id' => $types->random()])
             ->has(Exercise::factory()->count(50)
                 ->sequence(fn ($sequence) => ['level' => Helper::randArray(Level::getNames())]))
             ->hasImage(1)

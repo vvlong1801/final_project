@@ -11,7 +11,7 @@ class ExerciseService extends BaseService implements ExerciseServiceInterface
 {
     public function getExercises()
     {
-        return Exercise::all();
+        return Exercise::with(['gif', 'image', 'video'])->get();
     }
 
     public function getExercisesWithPagination($perPage)

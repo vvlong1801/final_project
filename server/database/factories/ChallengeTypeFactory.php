@@ -17,7 +17,7 @@ class ChallengeTypeFactory extends Factory
     public function definition()
     {
         return [
-            'title' => fake()->title(),
+            'name' => fake()->title(),
             'detail' => fake()->text(100),
         ];
     }

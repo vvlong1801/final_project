@@ -25,7 +25,7 @@ onMounted(() => {
 
 const onUpload = async (event, type) => {
   const file = event.files[0];
-  console.log(type);
+
   const formData = new FormData();
   formData.append("file", file);
   formData.append("collection", "exercises");

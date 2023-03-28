@@ -29,6 +29,23 @@ const router = createRouter({
           name: "dashboard",
           component: () => import("@/views/Dashboard.vue"),
         },
+        //==============challenge================
+        {
+          path: "/challenges",
+          name: "challenges.index",
+          component: () => import("@/views/challenges/Index.vue"),
+        },
+        {
+          path: "/challenges/edit/:id",
+          name: "challenges.edit",
+          component: () => import("@/views/challenges/Edit.vue"),
+        },
+        {
+          path: "/challenges/create",
+          name: "challenges.create",
+          component: () => import("@/views/challenges/Create.vue"),
+        },
+        //==============exercise================
         {
           path: "/exercises",
           name: "exercises.index",
@@ -44,11 +61,13 @@ const router = createRouter({
           name: "exercises.create",
           component: () => import("@/views/exercises/Create.vue"),
         },
+        //==============equipments================
         {
           path: "/equipments",
           name: "equipments.index",
           component: () => import("@/views/equipments/Index.vue"),
         },
+        //==============muscles================
         {
           path: "/muscles",
           name: "muscles.index",

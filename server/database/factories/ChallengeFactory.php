@@ -20,7 +20,7 @@ class ChallengeFactory extends Factory
     {
         // dd(CommonStatus::active->value);
         return [
-            'title' => fake()->title(),
+            'name' => fake()->title(),
             'type_id' => ChallengeType::factory(),
             'status' => CommonStatus::active->name,
             'description' => fake()->text(200),

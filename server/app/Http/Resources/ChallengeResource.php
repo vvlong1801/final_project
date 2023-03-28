@@ -16,9 +16,11 @@ class ChallengeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
-            'image' => new ImageResource($this->image),
+            'name' => $this->name,
+            'type' => $this->type->name,
+            'image' => new MediaResource($this->image),
             'description' => $this->description,
+            'exercises_count' => $this->exercises_count,
         ];
     }
 }

@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('challenges', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->integer('type_id');
+            $table->string('name');
+            $table->integer('type_id')->nullable();
             $table->string('description')->nullable();
             $table->integer('status')->default(1);
             $table->timestamps();

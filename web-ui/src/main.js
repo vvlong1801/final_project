@@ -1,7 +1,9 @@
 import "./bootstrap";
 import { createApp } from "vue";
-import "@/styles/main.css";
+import "primevue/resources/themes/lara-light-indigo/theme.css";  
+import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
+import "@/styles/main.css";
 import App from "./App.vue";
 import router from "./router";
 import { createPinia } from "pinia";

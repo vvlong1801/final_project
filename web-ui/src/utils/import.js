@@ -56,6 +56,10 @@ export function registerGlobalComponents(app) {
     "Toolbar",
     defineAsyncComponent(() => import("primevue/toolbar"))
   );
+  app.component(
+    "Card",
+    defineAsyncComponent(() => import("primevue/card"))
+  );
 
   //==========overlay==========
   app.component(
@@ -66,5 +70,11 @@ export function registerGlobalComponents(app) {
   app.component(
     "ConfirmDialog",
     defineAsyncComponent(() => import("primevue/confirmdialog"))
+  );
+
+  //==========overlay==========
+  app.component(
+    "Badge",
+    defineAsyncComponent(() => import("primevue/badge"))
   );
 }

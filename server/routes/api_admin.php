@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BaseController;
+use App\Http\Controllers\Admin\ChallengeController;
 use App\Http\Controllers\Admin\EquipmentController;
 use App\Http\Controllers\Admin\ExerciseController;
 use App\Http\Controllers\Admin\MediaController;
@@ -56,7 +57,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //=============== Challenge ===============
     Route::get('/challenges', [ChallengeController::class, 'index']);
-    Route::get('/challenges/{id}', [ChallengeController::class, 'show']);
+    Route::get('/challenges/types', [ChallengeController::class, 'getChallengeTypes']);
+    Route::get('/challenges/{id}', [ChallengeController::class, 'findById']);
+    Route::post('/challenges', [ChallengeController::class, 'create']);
+    Route::put('/challenges/{id}', [ChallengeController::class, 'update']);
+    Route::delete('/challenges/{id}', [ChallengeController::class, 'delete']);
     //=============== Plan ===============
     Route::get('/plans', [PlanController::class, 'index']);
     Route::get('/plans/{id}', [PlanController::class, 'show']);

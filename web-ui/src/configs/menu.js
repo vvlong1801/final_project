@@ -13,6 +13,11 @@ export const appMenu = [
     label: "Sources",
     items: [
       {
+        label: "Challenges",
+        icon: "pi pi-fw pi-home",
+        to: "/challenges",
+      },
+      {
         label: "Exercises",
         icon: "pi pi-fw pi-home",
         to: "/exercises",
