@@ -2,7 +2,7 @@
 
 @layer components {
     .card {
-        @apply bg-white border rounded-xl shadow-md p-6;
+        @apply bg-white border rounded-xl shadow-md p-6 relative top-0 left-0;
     }
 
     .p-dataview-content > .grid-nogutter {

@@ -1,22 +1,19 @@
 <script setup>
 import FileUpload from "primevue/fileupload";
-import { useToast } from "primevue/usetoast";
 import { useChallenge } from "@/stores/challenge";
-import { useExercise } from "@/stores/exercise";
 import { onMounted } from "vue";
 import { status } from "@/utils/option";
+import { useToast } from "primevue/usetoast";
 
+const challengeStore = useChallenge();
 const toast = useToast();
-const store = useChallenge();
-const { exercises, getExercises } = useExercise();
+const pageIndex = 0;
 
-onMounted(() => {
-  store.getChallengeTypes();
-  getExercises();
-});
+onMounted(challengeStore.getChallengeTypes);
 
 const onUpload = async (event, type) => {
   const file = event.files[0];
+
   const formData = new FormData();
   formData.append("file", file);
   formData.append("collection", "challenges");
@@ -29,7 +26,7 @@ const onUpload = async (event, type) => {
       },
     });
 
-    store.form[type] = res.data.data || res.data;
+    challengeStore.form[type] = res.data.data || res.data;
 
     toast.add({
       severity: "success",
@@ -48,43 +45,43 @@ const onUpload = async (event, type) => {
 };
 </script>
 <template>
-  <div class="card flex space-y-6 min-h-full">
-    <div class="w-1/3 grid grid-cols-2 gap-4">
+  <div class="card flex flex-col space-y-6 min-h-full">
+    <div class="grid grid-cols-5 gap-4">
       <label id="title" class="col-span-2">
         <div>Name</div>
         <input-text
           id="name"
           placeholder="enter name..."
           class="w-full"
-          v-model="store.form.name"
+          v-model="challengeStore.form.name"
         />
       </label>
-      <label for="type">
+      <label for="type" class="row-start-2 col-span-2">
         <div>Type</div>
         <Dropdown
           id="type"
           class="w-full"
-          v-model="store.form.type"
+          v-model="challengeStore.form.type"
           optionLabel="name"
-          :options="store.challengeTypes"
+          :options="challengeStore.challengeTypes"
           placeholder="enter type"
           dataKey="id"
         />
       </label>
-      <label for="status">
+      <label for="status" class="row-start-3 col-span-2">
         <div>Status</div>
         <Dropdown
           id="status"
           class="w-full"
           :options="status"
-          v-model="store.form.status"
+          v-model="challengeStore.form.status"
           placeholder="enter status"
         />
       </label>
-      <label for="banner" class="col-span-2">
+      <label for="image" class="row-start-1 col-span-3 row-span-3 col-start-3">
         <div>Banner</div>
         <FileUpload
-          name="banner"
+          name="image"
           accept="image/*"
           :maxFileSize="1000000"
           @uploader="onUpload($event, 'image')"
@@ -96,16 +93,16 @@ const onUpload = async (event, type) => {
           >
             <div class="flex space-x-4 items-center justify-center">
               <Button @click="chooseCallback" icon="pi pi-cloud-upload" />
-              <span v-if="store.form.banner">{{
-                store.form.banner?.filename
+              <span v-if="challengeStore.form.image">{{
+                challengeStore.form.image?.filename
               }}</span>
             </div>
           </template>
           <template #content>
             <Image
-              v-if="store.form.image"
-              :src="store.form.image?.url"
-              :alt="store.form.image?.name"
+              v-if="challengeStore.form.image"
+              :src="challengeStore.form.image?.url"
+              :alt="challengeStore.form.image?.name"
               class="w-full flex justify-center items-center"
             />
             <div v-else>
@@ -114,7 +111,28 @@ const onUpload = async (event, type) => {
           </template>
         </FileUpload>
       </label>
+      <label for="description" class="col-span-5">
+        <div>Description</div>
+        <Textarea
+          id="description"
+          v-model="challengeStore.form.description"
+          class="w-full"
+          rows="3"
+        />
+      </label>
     </div>
-    <div class="w-2/3"></div>
+    <div class="flex justify-between">
+      <Button
+        icon="pi pi-angle-left"
+        label="Back"
+        @click="$emit('prevPage', pageIndex)"
+      />
+      <Button
+        icon="pi pi-angle-right"
+        label="Next"
+        @click="$emit('nextPage', pageIndex)"
+        iconPos="right"
+      />
+    </div>
   </div>
 </template>

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AppLayout from "@/layouts/admin/AppLayout.vue";
 import GuestLayout from "@/layouts/admin/GuestLayout.vue";
+import ChallengeCreate from "@/views/challenges/Create.vue"
 
 const guest = (to, from, next) => {
   if (localStorage.getItem("access_token")) {
@@ -42,9 +43,29 @@ const router = createRouter({
         },
         {
           path: "/challenges/create",
-          name: "challenges.create",
+          // name: "challenges.create",
           component: () => import("@/views/challenges/Create.vue"),
+          children: [
+            {
+              path: "/challenges/create",
+              name: "challenges.create",
+              component: () => import("@/views/challenges/form/BasicInfo.vue"),
+            },
+            {
+              path: "/challenges/create/exercise_picker",
+              name: "challenges.create.exercise_picker",
+              component: () =>
+                import("@/views/challenges/form/ExercisePicker.vue"),
+            },
+            {
+              path: "/challenges/create/confirmation",
+              name: "challenges.create.confirmation",
+              component: () =>
+                import("@/views/challenges/form/Confirmation.vue"),
+            },
+          ],
         },
+
         //==============exercise================
         {
           path: "/exercises",
