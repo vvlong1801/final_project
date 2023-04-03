@@ -44,7 +44,7 @@ export const useMuscle = defineStore("muscle", () => {
     return window.axios
       .get("muscles")
       .then((res) => {
-        muscles.value = res.data.data;
+        muscles.value = res.data;
       })
       .catch((err) => {});
   };

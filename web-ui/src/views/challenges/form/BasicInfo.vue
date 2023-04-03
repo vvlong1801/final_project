@@ -62,10 +62,8 @@ const onUpload = async (event, type) => {
           id="type"
           class="w-full"
           v-model="challengeStore.form.type"
-          optionLabel="name"
           :options="challengeStore.challengeTypes"
           placeholder="enter type"
-          dataKey="id"
         />
       </label>
       <label for="status" class="row-start-3 col-span-2">

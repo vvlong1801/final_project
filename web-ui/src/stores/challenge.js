@@ -51,7 +51,7 @@ export const useChallenge = defineStore("challenge", () => {
     return window.axios
       .get("challenges")
       .then((res) => {
-        challenges.value = res.data.data;
+        challenges.value = res.data;
       })
       .catch((err) => {});
   };
@@ -60,7 +60,7 @@ export const useChallenge = defineStore("challenge", () => {
     return window.axios
       .get("challenges/types")
       .then((res) => {
-        challengeTypes.value = res.data.data;
+        challengeTypes.value = res.data;
       })
       .catch((err) => {
         showToast("error", err.response.data.message);
@@ -71,7 +71,7 @@ export const useChallenge = defineStore("challenge", () => {
     return window.axios
       .get(`challenges/find/${id}`)
       .then((res) => {
-        findedChallenge.value = res.data.data;
+        findedChallenge.value = res.data;
       })
       .catch((err) => {
         showToast("error", err.response.data.message);
@@ -79,12 +79,12 @@ export const useChallenge = defineStore("challenge", () => {
   };
 
   const createChallenge = () => {
-    form.exercises = form.muscles.map((item) => item.id);
+    form.exercises = form.exercises.map((item) => item.id);
 
     window.axios
       .post("challenges", form)
       .then((res) => {
-        showToast("success", res.data.message);
+        showToast("success", res.message);
         router.push({ name: "challenges.index" });
         resetForm();
       })
@@ -99,7 +99,7 @@ export const useChallenge = defineStore("challenge", () => {
     window.axios
       .put(`challenges/${id}`, form)
       .then((res) => {
-        showToast("success", res.data.message);
+        showToast("success", res.message);
         router.push({ name: "challenges.index" });
         resetFindedChallenge();
         resetForm();
@@ -112,7 +112,7 @@ export const useChallenge = defineStore("challenge", () => {
     window.axios
       .delete(`challenges/${id}`)
       .then((res) => {
-        showToast("success", res.data.message);
+        showToast("success", res.message);
         getChallenges();
       })
       .catch((err) => {

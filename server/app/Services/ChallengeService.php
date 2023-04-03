@@ -14,7 +14,7 @@ class ChallengeService extends BaseService implements ChallengeServiceInterface
     }
     public function getChallengeTypes()
     {
-        return ChallengeType::all();
+        return ChallengeType::all()->pluck('name');
     }
 
     public function getChallengeById($id)
@@ -25,8 +25,8 @@ class ChallengeService extends BaseService implements ChallengeServiceInterface
 
     public function createChallenge(array $payload)
     {
-        $payload['type_id'] = \Arr::get($payload, 'type', 0);
-        $challenge = new Challenge(\Arr::only($payload, ['name', 'type_id', 'description']));
+        $challenge = new Challenge(\Arr::only($payload, ['name', 'description']));
+        $challenge->type_id = ChallengeType::whereName(\Arr::get($payload, 'type', ''))->pluck('id')->first();
         $challenge->save();
         $challenge->image()->save($payload['image']);
         $challenge->exercises()->attach($payload['exercises']);

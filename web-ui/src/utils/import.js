@@ -60,6 +60,10 @@ export function registerGlobalComponents(app) {
     "Card",
     defineAsyncComponent(() => import("primevue/card"))
   );
+  app.component(
+    "Divider",
+    defineAsyncComponent(() => import("primevue/divider"))
+  );
 
   //==========overlay==========
   app.component(

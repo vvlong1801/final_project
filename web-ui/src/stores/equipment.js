@@ -44,7 +44,7 @@ export const useEquipment = defineStore("equipment", () => {
     return window.axios
       .get("equipments")
       .then((res) => {
-        equipments.value = res.data.data;
+        equipments.value = res.data;
       })
       .catch((err) => {
         showToast("error", err.message);
@@ -57,7 +57,7 @@ export const useEquipment = defineStore("equipment", () => {
       .post("equipments", form)
       .then((res) => {
         getEquipments();
-        showToast("success", res.data.message);
+        showToast("success", res.message);
       })
       .catch((err) => {
         errors.value = err.response.data;
@@ -71,7 +71,7 @@ export const useEquipment = defineStore("equipment", () => {
       .put(`equipments/${editId.value}`, form)
       .then((res) => {
         getEquipments();
-        showToast("success", res.data.message);
+        showToast("success", res.message);
       })
       .catch((err) => {
         errors.value = err.response.data;
@@ -85,7 +85,7 @@ export const useEquipment = defineStore("equipment", () => {
       .delete(`equipments/${id}`)
       .then((res) => {
         getEquipments();
-        showToast("success", res.data.message);
+        showToast("success", res.message);
       })
       .catch((err) => {
         errors.value = err.response.data;

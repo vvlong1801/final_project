@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 export const useExercise = defineStore("exercise", () => {
   const router = useRouter();
   const exercises = ref([]);
+  const pagination = ref({});
   const filtered = ref([]);
   const selectedExercises = ref([]);
   const toast = useToast();
@@ -61,7 +62,17 @@ export const useExercise = defineStore("exercise", () => {
     return window.axios
       .get("exercises")
       .then((res) => {
+        exercises.value = res.data;
+      })
+      .catch((err) => {});
+  };
+
+  const getExercisesWithPagination = (pageNum = 1) => {
+    return window.axios
+      .get(`exercises/12?page=${pageNum}`)
+      .then((res) => {
         exercises.value = res.data.data;
+        pagination.value = res.data.pagination;
       })
       .catch((err) => {});
   };
@@ -70,7 +81,7 @@ export const useExercise = defineStore("exercise", () => {
     return window.axios
       .get(`exercises/find/${id}`)
       .then((res) => {
-        findedExercise.value = res.data.data;
+        findedExercise.value = res.data;
       })
       .catch((err) => {
         showToast("error", err.response.data.message);
@@ -84,7 +95,7 @@ export const useExercise = defineStore("exercise", () => {
     window.axios
       .post("exercises", form)
       .then((res) => {
-        showToast("success", res.data.message);
+        showToast("success", res.message);
         router.push({ name: "exercises.index" });
         resetSelected();
         resetForm();
@@ -101,7 +112,7 @@ export const useExercise = defineStore("exercise", () => {
     window.axios
       .put(`exercises/${id}`, form)
       .then((res) => {
-        showToast("success", res.data.message);
+        showToast("success", res.message);
         router.push({ name: "exercises.index" });
         resetFindedExercise();
         resetForm();
@@ -115,7 +126,7 @@ export const useExercise = defineStore("exercise", () => {
     window.axios
       .post("exercises/delete", { ids })
       .then((res) => {
-        showToast("success", res.data.message);
+        showToast("success", res.message);
         getExercises();
       })
       .catch((err) => {
@@ -126,6 +137,7 @@ export const useExercise = defineStore("exercise", () => {
 
   return {
     exercises,
+    pagination,
     selectedExercises,
     form,
     fillForm,
@@ -133,6 +145,7 @@ export const useExercise = defineStore("exercise", () => {
     resetSelected,
     filtered,
     getExercises,
+    getExercisesWithPagination,
     getExerciseById,
     findedExercise,
     createExercise,

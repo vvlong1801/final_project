@@ -57,7 +57,7 @@ const complete = () => {
     <router-view
       @prev-page="(pageIndex) => prevPage(pageIndex)"
       @next-page="(pageIndex) => nextPage(pageIndex)"
-      @complete="complete"
+      @submit="$emit('onSubmit')"
     >
     </router-view>
   </div>

@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DeleteExerciseRequest;
 use App\Http\Requests\Admin\StoreExerciseRequest;
+use App\Http\Resources\collections\ExerciseCollection;
 use App\Http\Resources\ExerciseResource;
-use App\Models\Exercise;
 use App\Services\Interfaces\ExerciseServiceInterface;
 use App\Services\Interfaces\MediaServiceInterface;
-use Illuminate\Http\Request;
 
 class ExerciseController extends Controller
 {
@@ -26,14 +25,15 @@ class ExerciseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($perPage = 0)
+    public function index(int $perPage = 0)
     {
         if ($perPage) {
             $exercises = $this->exerciseService->getExercisesWithPagination($perPage);
+            return $this->getResponse(new ExerciseCollection($exercises), 'get exercises is success');
         } else {
             $exercises = $this->exerciseService->getExercises();
+            return $this->getResponse(ExerciseResource::collection($exercises), 'get exercises is success');
         }
-        return $this->getResponse(ExerciseResource::collection($exercises), 'get exercises is success');
         // ExerciseResource::collection($exercises)
     }
 

@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StoreChallengeResquest;
+use App\Http\Requests\Admin\StoreChallengeRequest;
 use App\Http\Resources\ChallengeResource;
 use App\Http\Resources\ChallengeTypeResource;
-use App\Models\ChallengeType;
+
 use App\Services\Interfaces\ChallengeServiceInterface;
 use App\Services\Interfaces\MediaServiceInterface;
-use Illuminate\Http\Request;
+
 
 class ChallengeController extends Controller
 {
@@ -32,7 +32,7 @@ class ChallengeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function create(StoreChallengeResquest $request)
+    public function create(StoreChallengeRequest $request)
     {
         $payload = $request->validated();
         $image = \Arr::get($payload, 'image', false);
@@ -54,13 +54,13 @@ class ChallengeController extends Controller
     public function getChallengeTypes()
     {
         $challengeTypes = $this->challengeService->getChallengeTypes();
-        return $this->getResponse(ChallengeTypeResource::collection($challengeTypes), 'get challenge types success');
+        return $this->getResponse($challengeTypes, 'get challenge types success');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update($id, StoreChallengeResquest $request)
+    public function update($id, StoreChallengeRequest $request)
     {
         $payload = $request->validated();
         $image = \Arr::get($payload, 'image', false);

@@ -28,7 +28,7 @@ export const useLogin = defineStore("login", () => {
     return window.axios
       .post("login", form)
       .then((res) => {
-        auth.login(res.data.access_token);
+        auth.login(res.access_token);
       })
       .catch((err) => {
         console.log(err)
