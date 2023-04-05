@@ -26,6 +26,7 @@ class StoreExerciseRequest extends FormRequest
             'level' => '',
             'type' => 'required',
             'equipment' => '',
+            'groupExercise' => '',
             'muscles' => 'required',
             'description' => '',
             'gif' => '',

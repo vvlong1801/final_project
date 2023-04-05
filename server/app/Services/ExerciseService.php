@@ -11,7 +11,7 @@ class ExerciseService extends BaseService implements ExerciseServiceInterface
 {
     public function getExercises()
     {
-        return Exercise::with(['gif', 'image', 'video'])->get();
+        return Exercise::with(['gif', 'image', 'video', 'groupExercise'])->get();
     }
 
     public function getExercisesWithPagination($perPage)
@@ -27,8 +27,8 @@ class ExerciseService extends BaseService implements ExerciseServiceInterface
     public function createExercise(array $payload)
     {
         $payload['equipment_id'] = \Arr::get($payload, 'equipment', 0);
-        $exercise = new Exercise(\Arr::only($payload, ['name', 'level', 'type', 'equipment_id', 'description']));
-        $exercise->save();
+        $payload['group_exercise_id'] = \Arr::get($payload, 'groupExercise.id', null);
+        $exercise = Exercise::create(\Arr::only($payload, ['name', 'level', 'type', 'equipment_id', 'group_exercise_id', 'description']));
         if ($payload['gif']) $exercise->gif()->save($payload['gif']);
         if ($payload['image']) $exercise->image()->save($payload['image']);
         if ($payload['video']) $exercise->video()->save($payload['video']);

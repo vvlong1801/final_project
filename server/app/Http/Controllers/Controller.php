@@ -17,4 +17,12 @@ class Controller extends BaseController
             'status' => $status,
         ]);
     }
+
+    public function responseOk($data, $message = "success"){
+        return response()->json([
+            'data' => $data,
+            'message' => $message,
+            'status' => 200,
+        ]);
+    }
 }

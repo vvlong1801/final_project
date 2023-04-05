@@ -5,8 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BaseController;
 use App\Http\Controllers\Admin\ChallengeController;
+use App\Http\Controllers\Admin\EnumController;
 use App\Http\Controllers\Admin\EquipmentController;
 use App\Http\Controllers\Admin\ExerciseController;
+use App\Http\Controllers\Admin\GroupExerciseController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MuscleController;
 use App\Http\Controllers\Admin\UploadController;
@@ -37,6 +39,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/temporary-url/{collection}/{filename}', [MediaController::class, 'getTempUrl']);
     Route::post('/upload', [MediaController::class, 'upload']);
     //=============== User ===================
+    //=============== Type ===================
+    Route::get('/types/{name}', [EnumController::class, 'getType']);
+    //=============== Group Exercise ===============
+    Route::get('/group_exercises', [GroupExerciseController::class, 'index']);
+    Route::post('/group_exercises', [GroupExerciseController::class, 'create']);
+    Route::put('/group_exercises/{id}', [GroupExerciseController::class, 'update']);
+    Route::delete('/group_exercises/delete', [GroupExerciseController::class, 'delete']);
+    //=============== Exercise ===============
+    Route::get('/exercises/find/{id}', [ExerciseController::class, 'findById']);
+    Route::get('/exercises/{per_page?}', [ExerciseController::class, 'index']);
+    Route::post('/exercises/delete', [ExerciseController::class, 'delete']);
+    Route::post('/exercises', [ExerciseController::class, 'create']);
+    Route::put('/exercises/{id}', [ExerciseController::class, 'update']);
     //=============== Exercise ===============
     Route::get('/exercises/find/{id}', [ExerciseController::class, 'findById']);
     Route::get('/exercises/{per_page?}', [ExerciseController::class, 'index']);

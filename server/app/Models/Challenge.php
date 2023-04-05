@@ -38,11 +38,6 @@ class Challenge extends Model
     //     return Attribute::make(get: fn ($value, $attributes) => );
     // }
 
-    public function type()
-    {
-        return $this->belongsTo(ChallengeType::class, 'type_id', 'id');
-    }
-
     public function exercises()
     {
         return $this->belongsToMany(Exercise::class);

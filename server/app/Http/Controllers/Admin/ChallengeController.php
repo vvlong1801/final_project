@@ -51,11 +51,11 @@ class ChallengeController extends Controller
         return $this->getResponse(new ChallengeResource($challenge), 'get challenge is success');
     }
 
-    public function getChallengeTypes()
-    {
-        $challengeTypes = $this->challengeService->getChallengeTypes();
-        return $this->getResponse($challengeTypes, 'get challenge types success');
-    }
+    // public function getChallengeTypes()
+    // {
+    //     $challengeTypes = $this->challengeService->getChallengeTypes();
+    //     return $this->getResponse($challengeTypes, 'get challenge types success');
+    // }
 
     /**
      * Update the specified resource in storage.

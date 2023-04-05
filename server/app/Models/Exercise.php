@@ -29,13 +29,6 @@ class Exercise extends Model
         );
     }
 
-    public function kcal(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => number_format($value, 1)
-        );
-    }
-
     public function type(): Attribute
     {
         return Attribute::make(
@@ -48,6 +41,11 @@ class Exercise extends Model
     public function favourites()
     {
         return $this->morphMany(Favourite::class, 'favouriteable');
+    }
+
+    public function groupExercise()
+    {
+        return $this->belongsTo(GroupExercise::class);
     }
 
     public function equipment()

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\CommonStatus;
+use App\Enums\StatusChallenge;
 use App\Models\ChallengeType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,11 +19,9 @@ class ChallengeFactory extends Factory
      */
     public function definition()
     {
-        // dd(CommonStatus::active->value);
         return [
             'name' => fake()->title(),
-            'type_id' => ChallengeType::factory(),
-            'status' => CommonStatus::active->name,
+            'status' => StatusChallenge::init->value,
             'description' => fake()->text(200),
         ];
     }

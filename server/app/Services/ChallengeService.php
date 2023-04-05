@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Challenge;
-use App\Models\ChallengeType;
 use App\Services\Interfaces\ChallengeServiceInterface;
 
 class ChallengeService extends BaseService implements ChallengeServiceInterface
@@ -11,10 +10,6 @@ class ChallengeService extends BaseService implements ChallengeServiceInterface
     public function getChallenges()
     {
         return Challenge::with(['type', 'image'])->withCount('exercises')->get();
-    }
-    public function getChallengeTypes()
-    {
-        return ChallengeType::all()->pluck('name');
     }
 
     public function getChallengeById($id)
@@ -26,7 +21,6 @@ class ChallengeService extends BaseService implements ChallengeServiceInterface
     public function createChallenge(array $payload)
     {
         $challenge = new Challenge(\Arr::only($payload, ['name', 'description']));
-        $challenge->type_id = ChallengeType::whereName(\Arr::get($payload, 'type', ''))->pluck('id')->first();
         $challenge->save();
         $challenge->image()->save($payload['image']);
         $challenge->exercises()->attach($payload['exercises']);

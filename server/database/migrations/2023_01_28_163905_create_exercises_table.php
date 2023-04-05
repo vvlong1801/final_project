@@ -17,10 +17,10 @@ return new class extends Migration
         Schema::create('exercises', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('group_exercise_id')->nullable();
             $table->integer('level')->default(Level::easy->value);
-            $table->integer('type')->comment('0: counter, 1: timer, 2: runner')->default(0);
+            $table->integer('type')->comment('0: repitition, 1: time-based, 2: distance-based')->default(0);
             $table->integer('equipment_id')->nullable();
-            $table->integer('star')->default(0);
             $table->string('description')->nullable();
             $table->timestamps();
         });

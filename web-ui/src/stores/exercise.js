@@ -15,6 +15,7 @@ export const useExercise = defineStore("exercise", () => {
     name: "",
     level: "",
     type: "",
+    groupExercise: null,
     equipment: null,
     muscles: [],
     description: "",
@@ -28,6 +29,7 @@ export const useExercise = defineStore("exercise", () => {
     form.level = data.level;
     form.type = data.type;
     form.equipment = data.equipment;
+    form.groupExercise = data.groupExercise;
     form.muscles = data.muscles;
     form.description = data.description;
     form.gif = data.gif;
@@ -42,6 +44,7 @@ export const useExercise = defineStore("exercise", () => {
     form.level = "";
     form.type = "";
     form.equipment = null;
+    form.groupExercise = null;
     form.muscles = [];
     form.description = "";
     form.gif = null;
