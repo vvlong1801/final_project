@@ -1,137 +1,81 @@
 <script setup>
-import { defineProps } from "vue";
+import { onMounted } from "vue";
 import { useEquipment } from "@/stores/equipment.js";
+import { useFile } from "@/composables/file.js";
 import FileUpload from "primevue/fileupload";
-import { useToast } from "primevue/usetoast";
 
-const { form, errors, createEquipment, editEquipment } = useEquipment();
-const toast = useToast();
+const { form, editItem } = useEquipment();
+const fileService = useFile();
 const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false,
-  },
-  formType: {
-    type: String,
-    default: "create",
-    validator(value) {
-      return ["create", "edit"].includes(value);
-    },
-  },
+  editForm: Boolean,
 });
 
-const emits = defineEmits(["update:visible"]);
-
-const onSubmit = () => {
-  if (props.formType.toLowerCase() == "create") {
-    createEquipment();
-  } else editEquipment();
-  if (errors?.value !== null) emits("update:visible", false);
-};
-
-const onUpload = async (event) => {
-  const file = event.files[0];
-
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("collection", "equipments");
-  formData.append("type", "image");
-
-  try {
-    const res = await window.axios.post("upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    form.image = res.data.data || res.data;
-
-    toast.add({
-      severity: "success",
-      summary: "Success",
-      detail: "File Uploaded",
-      life: 3000,
-    });
-  } catch (error) {
-    toast.add({
-      severity: "error",
-      summary: "Error Upload",
-      detail: error,
-      life: 3000,
-    });
+onMounted(() => {
+  form.resetForm();
+  if (props.editForm) {
+    form.setValues(editItem);
   }
+});
+
+const onUpload = async (event, type) => {
+  await fileService.upload(event, "equipments", type);
+  form.values[type] = fileService.file.value;
 };
 </script>
 <template>
-  <Dialog
-    :header="`${props.formType} Equipment`.toUpperCase()"
-    v-model:visible="props.visible"
-    @update:visible="$emit('update:visible', false)"
-    :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
-    :modal="true"
-  >
-    <Message severity="error" class="col-span-4" v-if="errors">
-      {{ errors?.message }}
-    </Message>
-    <div class="grid grid-cols-4 gap-6 py-6">
-      <label for="name" class="col-span-2">
-        <div>Name</div>
+  <div class="grid grid-cols-4 gap-6 py-6">
+    <div class="col-span-2">
+      <div class="p-float-label">
         <InputText
           class="w-full"
-          :class="{ 'p-invalid': errors?.errors.hasOwnProperty('name') }"
+          :class="{ 'p-invalid': form.errors.name }"
           type="text"
           label="name"
           id="name"
-          v-model="form.name"
+          v-model="form.values.name"
         />
-      </label>
-      <div class="col-span-1">
-        <h5>Image</h5>
-        <FileUpload
-          name="image"
-          mode="basic"
-          :customUpload="true"
-          :auto="true"
-          @uploader="onUpload"
-          :upload-icon="form.image ? '' : 'pi pi-fw pi-upload'"
-          :choose-label="form.image?.filename"
-          class="w-40"
-        >
-        </FileUpload>
+        <label for="name">Enter name</label>
       </div>
-      <div class="col-span-1">
-        <h5>Icon</h5>
-        <FileUpload
-          name="icon"
-          mode="basic"
-          :customUpload="true"
-          :auto="true"
-          @uploader="onUpload"
-          :upload-icon="form.icon ? '' : 'pi pi-fw pi-upload'"
-          :choose-label="form.icon"
-          class="w-40"
-        />
-      </div>
-      <div class="col-span-4">
-        <label for="address1">
-          <span>Description</span>
-          <Textarea
-            v-model="form.description"
-            class="textarea-restyle"
-            rows="5"
-            id="description"
-          />
-        </label>
-      </div>
+      <small class="p-error" id="text-error">{{
+        form.errors.name || "&nbsp;"
+      }}</small>
     </div>
-    <template #footer>
-      <Button
-        label="Cancel"
-        icon="pi pi-times"
-        @click="$emit('update:visible', false)"
-        class="p-button-text"
+    <div class="col-span-1">
+      <FileUpload
+        name="image"
+        mode="basic"
+        :customUpload="true"
+        :auto="true"
+        @uploader="onUpload($event, 'image')"
+        :upload-icon="form.values.image ? '' : 'pi pi-fw pi-upload'"
+        :choose-label="form.values.image?.filename ?? 'Image'"
+        class="w-40"
+      >
+      </FileUpload>
+      <small class="p-error" id="text-error">{{
+        form.errors.image || "&nbsp;"
+      }}</small>
+    </div>
+    <div class="col-span-1">
+      <FileUpload
+        name="icon"
+        mode="basic"
+        :customUpload="true"
+        :auto="true"
+        @uploader="onUpload($event, 'icon')"
+        :upload-icon="form.values.icon ? '' : 'pi pi-fw pi-upload'"
+        :choose-label="form.values.icon?.filename ?? 'Icon'"
+        class="w-40"
       />
-      <Button label="Save" icon="pi pi-check" @click="onSubmit" />
-    </template>
-  </Dialog>
+    </div>
+    <div class="col-span-4 p-float-label">
+      <Textarea
+        v-model="form.values.description"
+        class="w-full"
+        rows="5"
+        id="description"
+      />
+      <label for="description">Description</label>
+    </div>
+  </div>
 </template>

@@ -2,6 +2,7 @@
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import BaseView from "../BaseView.vue";
+import Tag from "primevue/tag";
 import { FilterMatchMode } from "primevue/api";
 import { onMounted, ref } from "vue";
 import { useExercise } from "@/stores/exercise";
@@ -80,24 +81,47 @@ const confirmDelete = (item) => {
         :sortOrder="-1"
         @page="onPage($event)"
       >
-      <template #header>
-        <div class="flex flex-wrap gap-2 items-center justify-between">
+        <template #header>
+          <div class="flex flex-wrap gap-2 items-center justify-between">
             <h4 class="m-0">Manage Exercises</h4>
             <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText v-model="filters['global'].value" placeholder="Search..." />
+              <i class="pi pi-search" />
+              <InputText
+                v-model="filters['global'].value"
+                placeholder="Search..."
+              />
             </span>
-        </div>
-    </template>
+          </div>
+        </template>
         <Column
           selectionMode="multiple"
           class="w-8"
           :exportable="false"
         ></Column>
         <Column field="name" header="Name" sortable></Column>
-        <Column field="level" header="Level" sortable></Column>
-        <Column field="type" header="Type" sortable></Column>
-        <Column field="muscles" header="Muscles" sortable body-class="flex gap-2">
+        <Column field="groupExercise.name" header="Group" sortable></Column>
+        <Column field="level" header="Level" sortable>
+          <template #body="slotProps">
+            <Tag
+              :value="slotProps.data.level.label"
+              :severity="slotProps.data.level.severity"
+            />
+          </template>
+        </Column>
+        <Column field="type" header="Type" sortable>
+          <template #body="slotProps">
+            <div class="flex">
+              <i class="!text-xl mr-2 pi" :class="slotProps.data.type.icon"></i>
+              <p>{{ slotProps.data.type.label }}</p>
+            </div>
+          </template>
+        </Column>
+        <Column
+          field="muscles"
+          header="Muscles"
+          sortable
+          body-class="flex gap-2"
+        >
           <template #body="slotProps">
             <Image
               v-for="(muscle, index) in slotProps.data.muscles"
@@ -106,7 +130,11 @@ const confirmDelete = (item) => {
             />
           </template>
         </Column>
-        <Column :exportable="false" style="min-width: 8rem" body-class="!text-end">
+        <Column
+          :exportable="false"
+          style="min-width: 8rem"
+          body-class="!text-end"
+        >
           <template #body="slotProps">
             <Button
               icon="pi pi-pencil"

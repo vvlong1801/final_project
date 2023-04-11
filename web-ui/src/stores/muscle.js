@@ -1,18 +1,29 @@
 import { defineStore } from "pinia";
-import { ref, reactive } from "vue";
+import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
+import { useForm } from "vee-validate";
+import * as Yup from "yup";
 
-// const route = useRouter();
 export const useMuscle = defineStore("muscle", () => {
   const toast = useToast();
   const muscles = ref([]);
-  const editId = ref(null);
+  const editItem = ref({});
 
-  const form = reactive({
+  const validationSchema = Yup.object({
+    name: Yup.string().required(),
+    image: Yup.object().required(),
+  });
+
+  const initialValues = {
     name: "",
     image: null,
     icon: null,
     description: "",
+  };
+
+  const form = useForm({
+    initialValues,
+    validationSchema,
   });
 
   const showToast = (type = "success", title = "Success", content = "") => {
@@ -24,22 +35,6 @@ export const useMuscle = defineStore("muscle", () => {
     });
   };
 
-  const resetForm = () => {
-    form.name = "";
-    form.image = null;
-    form.icon = null;
-    form.description = "";
-    editId.value = null;
-  };
-
-  const fillForm = (data) => {
-    form.name = data.name;
-    form.image = data.image;
-    form.icon = data.icon;
-    form.description = data.description;
-    editId.value = data.id;
-  };
-
   const getMuscles = () => {
     return window.axios
       .get("muscles")
@@ -49,31 +44,35 @@ export const useMuscle = defineStore("muscle", () => {
       .catch((err) => {});
   };
 
-  const createMuscle = () => {
-    return window.axios
-      .post("muscles", form)
-      .then((res) => {
-        getMuscles();
-        showToast("success", res.message);
-      })
-      .catch((err) => {
-        showToast("error", err.message);
-      })
-      .finally(resetForm);
-  };
+  const createMuscle = form.handleSubmit(
+    async (values, { setErrors, resetForm }) => {
+      await window.axios
+        .post("muscles", values)
+        .then((res) => {
+          getMuscles();
+          showToast("success", res.message);
+        })
+        .catch((err) => {
+          setErrors(err.response.data);
+          showToast("error", err.message);
+        });
+    }
+  );
 
-  const editMuscle = () => {
-    return window.axios
-      .put(`muscles/${editId.value}`, form)
-      .then(() => {
-        getMuscles();
-        showToast("success", res.message);
-      })
-      .catch((err) => {
-        showToast("error", err.message);
-      })
-      .finally(resetForm);
-  };
+  const editMuscle = form.handleSubmit(
+    async (values, { setErrors, resetForm }) => {
+      await window.axios
+        .put(`muscles/${editItem.value.id}`, values)
+        .then((res) => {
+          getMuscles();
+          showToast("success", res.message);
+        })
+        .catch((err) => {
+          setErrors(err.response.data);
+          showToast("error", err.message);
+        });
+    }
+  );
 
   function deleteMuscle(id) {
     return window.axios
@@ -83,14 +82,14 @@ export const useMuscle = defineStore("muscle", () => {
         showToast("success", res.message);
       })
       .catch((err) => {
+        setErrors(err.response.data);
         showToast("error", err.message);
       });
   }
 
   return {
     form,
-    resetForm,
-    fillForm,
+    editItem,
     muscles,
     getMuscles,
     createMuscle,

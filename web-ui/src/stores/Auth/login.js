@@ -1,46 +1,44 @@
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
 import { useAuth } from "./auth";
+import { useForm } from "vee-validate";
+import * as Yup from "yup";
 
 export const useLogin = defineStore("login", () => {
   const auth = useAuth();
-  const errors = reactive({});
-  const loading = ref(false);
 
-  const form = reactive({
+  const validationSchema = Yup.object({
+    email: Yup.string().email().required(),
+    password: Yup.string().min(6).required(),
+    remember: Yup.boolean(),
+  });
+
+  const initialValues = {
     email: "",
     password: "",
     remember: false,
+  };
+
+  const form = useForm({
+    initialValues,
+    validationSchema,
   });
 
-  function resetForm() {
-    form.email = "";
-    form.password = "";
-    form.remember = false;
-  }
-
-  async function handleSubmit() {
-    if (loading.value) return;
-
-    loading.value = true;
-    errors.value = {};
-
-    return window.axios
-      .post("login", form)
+  const login = form.handleSubmit(async (values, { setErrors, resetForm }) => {
+    console.log("login");
+    await window.axios
+      .post("login", values)
       .then((res) => {
         auth.login(res.access_token);
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
         if (err.response.status === 422) {
-          errors.value = err.response.data.errors;
+          setErrors(err.response.data.errors);
         }
-      })
-      .finally(() => {
-        form.password = "";
-        loading.value = false;
       });
-  }
+    resetForm();
+  });
 
-  return { form, errors, loading, resetForm, handleSubmit };
+  return { form, login };
 });

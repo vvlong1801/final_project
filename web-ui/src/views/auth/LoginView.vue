@@ -1,6 +1,8 @@
 <script setup>
 import { useLogin } from "@/stores/Auth/login.js";
+import { onMounted } from "vue";
 const store = useLogin();
+onMounted(store.form.resetForm);
 </script>
 <template>
   <div class="z-10 min-w-fit">
@@ -16,22 +18,40 @@ const store = useLogin();
           <i class="pi pi-envelope" />
           <input
             class="p-inputtext p-component w-full md:w-[400px] !rounded-lg"
+            :class="{
+              'p-invalid': store.form.errors.email && store.form.submitCount,
+            }"
             id="email"
             type="text"
-            v-model="store.form.email"
+            v-model="store.form.values.email"
             placeholder="Email"
           />
         </span>
+        <small
+          id="text-error"
+          class="p-error"
+          v-if="store.form.errors.email && store.form.submitCount"
+          >{{ store.form.errors.email || "&nbsp;" }}</small
+        >
         <span class="p-input-icon-left w-full">
           <i class="pi pi-lock" />
           <input
             class="p-inputtext p-component w-full md:w-[400px] !rounded-lg"
             id="password"
             type="password"
-            v-model="store.form.password"
+            :class="{
+              'p-invalid': store.form.errors.password && store.form.submitCount,
+            }"
+            v-model="store.form.values.password"
             placeholder="Password"
           />
         </span>
+        <small
+          id="text-error"
+          class="p-error"
+          v-if="store.form.errors.password && store.form.submitCount"
+          >{{ store.form.errors.password || "&nbsp;" }}</small
+        >
         <div class="mb-4 flex flex-wrap gap-3">
           <div>
             <div class="p-checkbox p-component mr-2">
@@ -39,7 +59,7 @@ const store = useLogin();
                 <input
                   type="checkbox"
                   name="remember"
-                  v-model="store.form.remember"
+                  v-model="store.form.values.remember"
                 />
               </div>
               <div class="p-checkbox-box">
@@ -59,7 +79,8 @@ const store = useLogin();
           type="submit"
           label="Login"
           class="!bg-primary-500 !border-none !rounded-lg"
-          @click="store.handleSubmit"
+          :loading="store.form.isSubmitting"
+          @click="store.login"
         />
       </div>
     </div>

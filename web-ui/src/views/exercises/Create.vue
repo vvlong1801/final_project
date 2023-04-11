@@ -1,10 +1,10 @@
 <script setup>
 import BaseView from "../BaseView.vue";
 import FormExercise from "./Form.vue";
-import { useExercise } from "@/stores/exercise";
 import { onMounted } from "vue";
-const { createExercise, resetForm } = useExercise();
-onMounted(resetForm);
+import { useExercise } from "@/stores/exercise";
+const { form, createExercise } = useExercise();
+onMounted(form.resetForm);
 </script>
 <template>
   <base-view title="Create Exercises">

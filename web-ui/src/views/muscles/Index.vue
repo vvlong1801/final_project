@@ -1,6 +1,8 @@
 <script setup>
 import BaseView from "../BaseView.vue";
-import FormMuscle from "./Form.vue";
+// import FormMuscle from "./Form.vue";
+import DialogCreate from "./DialogCreate.vue";
+import DialogEdit from "./DialogEdit.vue";
 
 import { ref, onMounted, computed, watch } from "vue";
 import { useMuscle } from "@/stores/muscle";
@@ -8,16 +10,18 @@ import { useMuscle } from "@/stores/muscle";
 const searchKey = ref("");
 const visibleModal = ref(false);
 const showAction = ref(null);
-const modalType = ref("create");
+const typeDialog = ref(null);
 
 const store = useMuscle();
 
 onMounted(store.getMuscles);
+
 watch(visibleModal, (newValue, oldValue) => {
   if (!newValue) {
-    store.resetForm();
+    store.form.resetForm();
   }
 });
+
 const searchList = computed(() => {
   return searchKey.value.length
     ? store.muscles.filter((muscle) => muscle.name.includes(searchKey.value))
@@ -25,13 +29,13 @@ const searchList = computed(() => {
 });
 
 const openCreateModal = () => {
-  modalType.value = "create";
+  typeDialog.value = DialogCreate;
   visibleModal.value = true;
 };
 
 const openEditModal = (muscle) => {
-  modalType.value = "edit";
-  store.fillForm(muscle);
+  store.editItem = muscle;
+  typeDialog.value = DialogEdit;
   visibleModal.value = true;
 };
 </script>
@@ -46,7 +50,10 @@ const openEditModal = (muscle) => {
             @click="openCreateModal"
           />
           <Toast />
-          <form-muscle v-model:visible="visibleModal" :form-type="modalType" />
+          <component
+            :is="typeDialog ?? DialogCreate"
+            v-model:visible="visibleModal"
+          />
         </template>
         <template #end>
           <span class="p-input-icon-left">

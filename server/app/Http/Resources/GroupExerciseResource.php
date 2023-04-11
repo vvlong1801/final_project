@@ -21,7 +21,7 @@ class GroupExerciseResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        if ($this->simple) {
+        if ($this->simple || $request->has('option')) {
             return [
                 'id' => $this->id,
                 'name' => $this->name,

@@ -1,19 +1,29 @@
 import { defineStore } from "pinia";
-import { ref, reactive } from "vue";
+import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
+import { useForm } from "vee-validate";
+import * as Yup from "yup";
 
-// const route = useRouter();
 export const useEquipment = defineStore("equipment", () => {
   const toast = useToast();
   const equipments = ref([]);
-  const editId = ref(null);
-  const errors = ref(null);
+  const editItem = ref({});
 
-  const form = reactive({
+  const validationSchema = Yup.object({
+    name: Yup.string().required(),
+    image: Yup.object().required(),
+  });
+
+  const initialValues = {
     name: "",
-    image: "",
-    icon: "",
+    image: null,
+    icon: null,
     description: "",
+  };
+
+  const form = useForm({
+    initialValues,
+    validationSchema,
   });
 
   const showToast = (type = "success", title = "Success", content = "") => {
@@ -25,21 +35,6 @@ export const useEquipment = defineStore("equipment", () => {
     });
   };
 
-  const fillForm = (data) => {
-    form.name = data.name;
-    form.image = data.image;
-    form.icon = data.icon;
-    form.description = data.description;
-    editId.value = data.id;
-  };
-
-  const resetForm = () => {
-    form.name = "";
-    form.image = "";
-    form.icon = "";
-    form.description = "";
-    editId.value = null;
-  };
   function getEquipments() {
     return window.axios
       .get("equipments")
@@ -51,34 +46,35 @@ export const useEquipment = defineStore("equipment", () => {
       });
   }
 
-  const createEquipment = () => {
+  const createEquipment = form.handleSubmit(
+    async (values, { setErrors, resetForm }) => {
+      await window.axios
+        .post("equipments", values)
+        .then((res) => {
+          getEquipments();
+          showToast("success", res.message);
+        })
+        .catch((err) => {
+          setErrors(err.response.data);
+          showToast("error", err.response.data.message);
+        });
+    }
+  );
 
-    return window.axios
-      .post("equipments", form)
-      .then((res) => {
-        getEquipments();
-        showToast("success", res.message);
-      })
-      .catch((err) => {
-        errors.value = err.response.data;
-        showToast("error", err.response.data.message);
-      })
-      .finally(resetForm);
-  };
-
-  const editEquipment = () => {
-    return window.axios
-      .put(`equipments/${editId.value}`, form)
-      .then((res) => {
-        getEquipments();
-        showToast("success", res.message);
-      })
-      .catch((err) => {
-        errors.value = err.response.data;
-        showToast("error", err.response.data.message);
-      })
-      .finally(resetForm);
-  };
+  const editEquipment = form.handleSubmit(
+    async (values, { setErrors, resetForm }) => {
+      await window.axios
+        .put(`equipments/${editItem.value.id}`, values)
+        .then((res) => {
+          getEquipments();
+          showToast("success", res.message);
+        })
+        .catch((err) => {
+          setErrors(err.response.data);
+          showToast("error", err.response.data.message);
+        });
+    }
+  );
 
   function deleteEquipment(id) {
     return window.axios
@@ -88,19 +84,17 @@ export const useEquipment = defineStore("equipment", () => {
         showToast("success", res.message);
       })
       .catch((err) => {
-        errors.value = err.response.data;
+        setErrors(err.response.data);
         showToast("error", err.response.data.message);
       });
   }
 
   return {
     form,
-    errors,
-    fillForm,
-    resetForm,
+    equipments,
+    editItem,
     editEquipment,
     createEquipment,
-    equipments,
     getEquipments,
     deleteEquipment,
   };

@@ -1,6 +1,7 @@
 <script setup>
 import BaseView from "../BaseView.vue";
-import FormEquipment from "./Form.vue";
+import DialogCreate from "./DialogCreate.vue";
+import DialogEdit from "./DialogEdit.vue";
 
 import { ref, onMounted, computed, watch } from "vue";
 import { useEquipment } from "@/stores/equipment";
@@ -8,21 +9,16 @@ import { useEquipment } from "@/stores/equipment";
 const searchKey = ref("");
 const visibleModal = ref(false);
 const showAction = ref(null);
-const modalType = ref("create");
+const typeDialog = ref(null);
 
 const store = useEquipment();
 
 onMounted(store.getEquipments);
 watch(visibleModal, (newValue, oldValue) => {
   if (!newValue) {
-    store.resetForm();
+    store.form.resetForm();
   }
 });
-
-const openCreateModal = () => {
-  modalType.value = "create";
-  visibleModal.value = true;
-};
 
 const searchList = computed(() => {
   return searchKey.value.length
@@ -32,9 +28,14 @@ const searchList = computed(() => {
     : store.equipments;
 });
 
+const openCreateModal = () => {
+  typeDialog.value = DialogCreate;
+  visibleModal.value = true;
+};
+
 const openEditModal = (equipment) => {
-  modalType.value = "edit";
-  store.fillForm(equipment);
+  store.editItem = equipment;
+  typeDialog.value = DialogEdit;
   visibleModal.value = true;
 };
 </script>
@@ -49,7 +50,10 @@ const openEditModal = (equipment) => {
             @click="openCreateModal"
           />
           <Toast />
-          <form-equipment v-model:visible="visibleModal" :form-type="modalType" />
+          <component
+            :is="typeDialog ?? DialogCreate"
+            v-model:visible="visibleModal"
+          />
         </template>
         <template #end>
           <span class="p-input-icon-left">
@@ -88,7 +92,7 @@ const openEditModal = (equipment) => {
                 ></div>
               </div>
             </Transition>
-            <Image :src="equipment.image.url" imageClass="w-full" />
+            <Image :src="equipment.image?.url" imageClass="w-full" />
           </div>
           <p class="truncate px-2">{{ equipment.name }}</p>
         </div>

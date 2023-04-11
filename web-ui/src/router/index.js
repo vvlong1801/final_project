@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AppLayout from "@/layouts/admin/AppLayout.vue";
 import GuestLayout from "@/layouts/admin/GuestLayout.vue";
-import ChallengeCreate from "@/views/challenges/Create.vue"
+import ChallengeCreate from "@/views/challenges/Create.vue";
 
 const guest = (to, from, next) => {
   if (localStorage.getItem("access_token")) {
@@ -66,6 +66,38 @@ const router = createRouter({
           ],
         },
 
+        //==============group exercise================
+        {
+          path: "/group-exercises",
+          name: "group_exercises.index",
+          component: () => import("@/views/group_exercises/Index.vue"),
+        },
+        {
+          path: "/group-exercises/:id/edit",
+          name: "group_exercises.edit",
+          component: () => import("@/views/group_exercises/Edit.vue"),
+        },
+        {
+          path: "/group-exercises/create",
+          name: "group_exercises.create",
+          component: () => import("@/views/group_exercises/Create.vue"),
+        },
+        //==============exercise================
+        {
+          path: "/exercises",
+          name: "exercises.index",
+          component: () => import("@/views/exercises/Index.vue"),
+        },
+        {
+          path: "/exercises/:id/edit",
+          name: "exercises.edit",
+          component: () => import("@/views/exercises/Edit.vue"),
+        },
+        {
+          path: "/exercises/create",
+          name: "exercises.create",
+          component: () => import("@/views/exercises/Create.vue"),
+        },
         //==============exercise================
         {
           path: "/exercises",
