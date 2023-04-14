@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreGroupExerciseRequest;
 use App\Http\Resources\GroupExerciseResource;
 use App\Services\Interfaces\GroupExerciseServiceInterface;
+use App\Services\Interfaces\MediaServiceInterface;
 use Illuminate\Http\Request;
 
 class GroupExerciseController extends Controller
 {
     protected $groupExerciseService;
+
 
     public function __construct(GroupExerciseServiceInterface $groupExerciseService)
     {
@@ -19,19 +22,23 @@ class GroupExerciseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $typeOption = $request->has('option');
-        $groupExercises = $this->groupExerciseService->getGroupExercises($typeOption);
-        return $this->responseOk(GroupExerciseResource::collection($groupExercises), 'success');
+        $groupExercises = $this->groupExerciseService->getGroupExercises();
+        return $this->responseOk($groupExercises, 'success');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(
+        StoreGroupExerciseRequest $request,
+        MediaServiceInterface $mediaService
+    ) {
+        $payload = $request->validated();
+        $payload['image'] = $mediaService->createMedia($payload['image']);
+        $groupExercise = $this->groupExerciseService->createGroupExercise($payload);
+        return $this->responseOk($groupExercise, 'success');
     }
 
     /**
@@ -39,7 +46,12 @@ class GroupExerciseController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $groupExercise = $this->groupExerciseService->getGroupExerciseById($id);
+            return $this->responseOk(new GroupExerciseResource($groupExercise), 'success');
+        } catch (\Throwable $th) {
+            abort(400, $th->getMessage());
+        }
     }
 
     /**

@@ -57,20 +57,26 @@ class ExerciseController extends Controller
     public function create(StoreExerciseRequest $request)
     {
         $payload = $request->validated();
-        $gif = \Arr::get($payload, 'gif', false);
-        $video = \Arr::get($payload, 'video', false);
-        $image = \Arr::get($payload, 'image', false);
 
-        $payload['gif'] = $gif ? $this->mediaService->createMedia($gif) : null;
-        $payload['video'] = $video ? $this->mediaService->createMedia($video) : null;
-        $payload['image'] = $image ? $this->mediaService->createMedia($image) : null;
 
-        $exercise = $this->exerciseService->createExercise($payload);
-        return $this->getResponse(new ExerciseResource($exercise), 'muscle created');
+        try {
+            $payload['gif'] = $this->mediaService->createMedia($payload['gif']);
+            $payload['image'] = $this->mediaService->createMedia($payload['image']);
+
+            $video = \Arr::get($payload, 'video', false);
+            if ($video) {
+                $payload['video'] =  $this->mediaService->createMedia($video);
+            }
+
+            $result = $this->exerciseService->createExercise($payload);
+            return $this->responseOk($result, 'muscle created');
+        } catch (\Throwable $th) {
+            abort(404, $th->getMessage());
+        }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified resource in storage.s
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id

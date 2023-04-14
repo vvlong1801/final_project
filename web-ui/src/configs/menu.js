@@ -18,11 +18,6 @@ export const appMenu = [
         to: "/challenges",
       },
       {
-        label: "Group Exercises",
-        icon: "pi pi-fw pi-home",
-        to: "/group-exercises",
-      },
-      {
         label: "Exercises",
         icon: "pi pi-fw pi-home",
         to: "/exercises",

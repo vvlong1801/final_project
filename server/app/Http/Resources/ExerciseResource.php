@@ -25,7 +25,7 @@ class ExerciseResource extends JsonResource
             "gif" => new MediaResource($this->gif),
             "image" => new MediaResource($this->image),
             "video" => new MediaResource($this->video),
-            "groupExercise" => new GroupExerciseResource($this->groupExercise, true),
+            "group_exercises" => GroupExerciseResource::collection($this->groupExercises),
         ];
     }
 }

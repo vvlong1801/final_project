@@ -43,7 +43,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/types/{name}', [EnumController::class, 'getType']);
     //=============== Group Exercise ===============
     Route::get('/group_exercises', [GroupExerciseController::class, 'index']);
-    Route::post('/group_exercises', [GroupExerciseController::class, 'create']);
+    Route::get('/group_exercises/{id}', [GroupExerciseController::class, 'show']);
+    Route::post('/group_exercises', [GroupExerciseController::class, 'store']);
     Route::put('/group_exercises/{id}', [GroupExerciseController::class, 'update']);
     Route::delete('/group_exercises/delete', [GroupExerciseController::class, 'delete']);
     //=============== Exercise ===============

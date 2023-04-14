@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 export const useGroupExercise = defineStore("groupExercise", () => {
   const router = useRouter();
   const groupExercises = ref([]);
+  const groupExercise = ref({});
   const toOptions = ref([]);
   const toast = useToast();
 
@@ -53,13 +54,24 @@ export const useGroupExercise = defineStore("groupExercise", () => {
       .catch((err) => {});
   };
 
+  const getGroupExercisesById = (id) => {
+    return window.axios
+      .get(`group_exercises/${id}`)
+      .then((res) => {
+        groupExercise.value = res.data;
+      })
+      .catch((err) => {});
+  };
+
   return {
     groupExercises,
+    groupExercise,
     toOptions,
     form,
     fillForm,
     resetForm,
     getGroupExercises,
+    getGroupExercisesById,
     getGroupExercisesToOptions,
   };
 });

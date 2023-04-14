@@ -114,8 +114,9 @@ export const useExercise = defineStore("exercise", () => {
           resetForm();
         })
         .catch((err) => {
-          setErrors(err.response.data);
-          showToast("error", err.response.data.message);
+          console.log(err);
+          // setErrors(err.response.data);
+          // showToast("error", err.response.data.message);
         });
     }
   );

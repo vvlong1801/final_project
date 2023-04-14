@@ -17,7 +17,7 @@ class GroupExerciseSeeder extends Seeder
     public function run(): void
     {
         $groupExes = GroupExercise::factory()->count(3)
-            ->has(Exercise::factory()->count(20)
+            ->hasAttached(Exercise::factory()->count(20)
                 ->sequence(fn ($sequence) => ['level' => Helper::randArray(Level::getNames())]))
             ->hasImage(1)
             ->create();

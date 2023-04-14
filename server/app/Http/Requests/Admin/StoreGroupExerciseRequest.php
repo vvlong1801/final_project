@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreExerciseRequest extends FormRequest
+class StoreGroupExerciseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,15 +23,9 @@ class StoreExerciseRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'level' => '',
-            'type' => 'required',
-            'equipment' => '',
-            'groupExercises' => '', // check exist
-            'muscles' => 'required',
-            'description' => '',
-            'gif' => 'required',
-            'video' => '',
             'image' => 'required',
+            'exercises' => 'required|array',
+            'description' => '',
         ];
     }
 }

@@ -43,11 +43,6 @@ class Exercise extends Model
         return $this->morphMany(Favourite::class, 'favouriteable');
     }
 
-    public function groupExercise()
-    {
-        return $this->belongsTo(GroupExercise::class);
-    }
-
     public function equipment()
     {
         return $this->belongsTo(Equipment::class);
@@ -76,6 +71,11 @@ class Exercise extends Model
     public function challenges()
     {
         return $this->belongsToMany(Challenge::class);
+    }
+
+    public function groupExercises()
+    {
+        return $this->belongsToMany(GroupExercise::class);
     }
 
     public function planItems()
