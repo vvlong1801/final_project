@@ -17,11 +17,12 @@ return new class extends Migration
         Schema::create('exercises', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            // $table->integer('group_exercise_id')->nullable();
-            $table->integer('level')->default(Level::easy->value);
-            $table->integer('type')->comment('0: repitition, 1: time-based, 2: distance-based')->default(0);
-            $table->integer('equipment_id')->nullable();
+            $table->integer('level');
+            $table->unsignedBigInteger('created_by');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->integer('evaluate_method')->comment('0: repitition, 1: time-based, 2: distance-based');
             $table->string('description')->nullable();
+            $table->foreignId('equipment_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

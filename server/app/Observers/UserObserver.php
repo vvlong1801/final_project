@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Enums\AccountStatus;
 use App\Enums\Role;
+use App\Enums\StatusAccount;
 use App\Models\Account;
 use App\Models\User;
 
@@ -18,8 +19,8 @@ class UserObserver
     public function creating(User $user)
     {
         $account = Account::create([
-            'role' => Role::member,
-            'status' => AccountStatus::not_verified,
+            'role' => Role::workoutUser,
+            'status' => StatusAccount::not_verified,
         ]);
         $user->account_id = $account->id;
     }

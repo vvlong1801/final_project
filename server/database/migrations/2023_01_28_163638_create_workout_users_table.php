@@ -13,14 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('results', function (Blueprint $table) {
+        Schema::create('workout_users', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('item_id');
-            $table->foreign('item_id')->references('id')->on('exercise_workout_session');
-            $table->double('actual_value');
-            $table->double('calories_burned')->nullable();
-            $table->time('duration')->nullable();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->integer('status')->default(1);
+            $table->integer('gender')->nullable();
+            $table->integer('age')->nullable();
+            $table->integer('height')->nullable();
+            $table->integer('weight')->nullable();
+            $table->integer('bmi')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -31,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('results');
+        Schema::dropIfExists('members');
     }
 };

@@ -34,10 +34,10 @@ trait HasRoles
      *
      * @return Attribute
      */
-    public function isMember(): Attribute
+    public function isWorkoutUser(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->isRole(Role::member)
+            get: fn () => $this->isRole(Role::workoutUser)
         );
     }
 

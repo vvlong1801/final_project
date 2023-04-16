@@ -8,7 +8,7 @@ enum TypeExercise: int
 {
     use Helper;
 
-    case repitition = 0;
-    case timeBased = 1;
-    case distanceBased = 2;
+    // case repitition = 0;
+    // case timeBased = 1;
+    // case distanceBased = 2;
 }

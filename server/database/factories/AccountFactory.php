@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Enums\AccountStatus;
 use App\Enums\Role;
+use App\Enums\StatusAccount;
 use App\Models\Account;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,8 +22,8 @@ class AccountFactory extends Factory
     public function definition()
     {
         return [
-            'role' => Role::member,
-            'status' => AccountStatus::verified,
+            'role' => Role::workoutUser,
+            'status' => StatusAccount::verified,
         ];
     }
 }

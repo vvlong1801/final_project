@@ -4,8 +4,10 @@ namespace Database\Seeders;
 
 use App\Enums\Role;
 use App\Models\Account;
+use App\Models\Creator;
 use App\Models\Member;
 use App\Models\User;
+use App\Models\WorkoutUser;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -29,6 +31,6 @@ class UserSeeder extends Seeder
             'email' => 'admin@admin.com',
         ])->for(Account::factory()->state(['role' => Role::admin]))->create();
 
-        $members = Member::factory()->state(['user_id' => User::factory()->hasAvatar(1)])->count(3)->create();
+        $this->call([CreatorSeeder::class, WorkoutUserSeeder::class]);
     }
 }

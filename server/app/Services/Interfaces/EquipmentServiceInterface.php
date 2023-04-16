@@ -2,9 +2,6 @@
 
 namespace App\Services\Interfaces;
 
-use App\Models\Challenge;
-use App\Models\Equipment;
-
 interface EquipmentServiceInterface
 {
     public function getEquipments();

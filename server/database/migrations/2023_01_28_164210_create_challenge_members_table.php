@@ -13,10 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('accounts', function (Blueprint $table) {
+        Schema::create('challenge_members', function (Blueprint $table) {
             $table->id();
-            $table->integer('role')->comment('1: workout_user, 2: creator, 3: admin, 1000: superAdmin');
-            $table->integer('status');
+            $table->foreignId('challenge_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->integer('role');
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('accounts');
+        Schema::dropIfExists('alternative_exercises');
     }
 };

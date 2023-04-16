@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\EvaluateMethod;
 use App\Enums\Level;
 use App\Supports\Helper;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -19,8 +20,9 @@ class ExerciseFactory extends Factory
     public function definition()
     {
         return [
-            'name' => fake()->text(20),
-            'level' => Helper::randArray(Level::getNames()),
+            'name' => fake()->text(10),
+            'level' => Helper::randArray(Level::getValues()),
+            'evaluate_method' => Helper::randArray(EvaluateMethod::getValues()),
             'description' => fake()->text(100),
         ];
     }

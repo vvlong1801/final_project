@@ -15,18 +15,22 @@ return new class extends Migration
     {
         Schema::create('challenges', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('type')->comment('1: free, 2: compete')->default(0);
-            $table->boolean('commit')->default(false);
-            $table->integer('commit_points')->nullable();
-            $table->integer('member_limit')->comment('0: newbie, 1: beginner, 2: middle, 3: high, 4: master')->nullable();
-            $table->boolean('limit_demension')->comment('false: up, true: down')->nullable();
-            $table->integer('status')->comment('0: init, 1: comming, 2: running, 3: pending, 4:finish')->default(0);
+            $table->string('name')->unique();
             $table->string('description')->nullable();
-            $table->dateTime('comming_at')->nullable();
-            $table->dateTime('running_at')->nullable();
-            $table->dateTime('pending_at')->nullable();
-            $table->dateTime('finish_at')->nullable();
+            $table->unsignedBigInteger('created_by');
+            $table->foreign('created_by')->references('id')->on('users');
+            $table->integer('type')->default(1)->comment('1: fixed');
+            $table->integer('max_count')->default(-1)->comment('-1: non-limited');
+            $table->integer('commit_point')->nullable();
+            $table->integer('min_rank')->default(0)->comment('0: newbie, 1: beginner, 2: middle, 3: advanced, 4: pro');
+            $table->integer('max_rank')->default(4)->comment('0: newbie, 1: beginner, 2: middle, 3: advanced, 4: pro');
+            $table->integer('who_can_join')->default(1)->comment('1: all, 2: group, 3: assign');
+            $table->boolean('approve_required')->default(false);
+            $table->integer('who_can_approve')->nullable();
+            $table->integer('status')->default(0)->comment('0: init, 1: waiting, 2: active, 3: finish, 4:pending');
+            $table->dateTime('released_at')->nullable();
+            $table->dateTime('finished_at')->nullable();
+            $table->dateTime('stopped_at')->nullable();
             $table->timestamps();
         });
     }

@@ -15,14 +15,14 @@ return new class extends Migration
     {
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
-            $table->integer('challenge_id');
-            $table->integer('member_id');
+            $table->foreignId('challenge_phase_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->integer('level')->default(1);
-            $table->integer('total_day')->default(30);
-            $table->integer('status')->default(1)->comment('1: on_going, 2: done, 3: pending, 4: not_started');
-            $table->date('started_at');
-            $table->dateTime('paused_at')->nullable();
-            // $table->primary(['challenge_id', 'member_id']);
+            $table->integer('current_session')->nullable();
+            $table->integer('status')->default(1)->comment('1: init, 2: doing, 3: completed, 4: pending');
+            $table->dateTime('started_at')->nullable();
+            $table->dateTime('stopped_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
         });
     }

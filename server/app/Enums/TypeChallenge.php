@@ -8,6 +8,6 @@ enum TypeChallenge: int
 {
     use Helper;
 
-    case free = 1;
-    case compete = 2;
+    case fixed = 1;
+    // case compete = 2;
 }

@@ -9,8 +9,8 @@ enum StatusChallenge: int
     use Helper;
 
     case init = 0;
-    case comming = 1;
-    case running = 2;
-    case pending = 3;
-    case finish = 4;
+    case waiting = 1;
+    case doing = 2;
+    case finished = 3;
+    case pending = 4;
 }

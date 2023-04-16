@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\CommonStatus;
+use FFI;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,14 +14,6 @@ class Challenge extends Model
 
     protected $guarded = [];
 
-    // protected $casts = [
-    //     'status' => CommonStatus::class,
-    // ];
-
-    // public function getStatusAttribute($value)
-    // {
-    //     return CommonStatus::fromValue($value);
-    // }
     protected function status(): Attribute
     {
         return Attribute::make(
@@ -38,9 +31,11 @@ class Challenge extends Model
     //     return Attribute::make(get: fn ($value, $attributes) => );
     // }
 
-    public function exercises()
+    // =============== relationship =================
+    // ==============================================
+    public function phases()
     {
-        return $this->belongsToMany(Exercise::class);
+        return $this->hasMany(ChallengePhase::class);
     }
 
     public function image()

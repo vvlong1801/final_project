@@ -2,9 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Enums\CommonStatus;
 use App\Enums\StatusChallenge;
-use App\Models\ChallengeType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,8 +18,8 @@ class ChallengeFactory extends Factory
     public function definition()
     {
         return [
-            'name' => fake()->title(),
-            'status' => StatusChallenge::init->value,
+            'name' => fake()->text(10),
+            'status' => StatusChallenge::init,
             'description' => fake()->text(200),
         ];
     }
