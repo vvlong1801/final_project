@@ -67,21 +67,21 @@ const router = createRouter({
         },
 
         //==============group exercise================
-        {
-          path: "/group-exercises",
-          name: "group_exercises.index",
-          component: () => import("@/views/group_exercises/Index.vue"),
-        },
-        {
-          path: "/group-exercises/:id/edit",
-          name: "group_exercises.edit",
-          component: () => import("@/views/group_exercises/Edit.vue"),
-        },
-        {
-          path: "/group-exercises/create",
-          name: "group_exercises.create",
-          component: () => import("@/views/group_exercises/Create.vue"),
-        },
+        // {
+        //   path: "/group-exercises",
+        //   name: "group_exercises.index",
+        //   component: () => import("@/views/group_exercises/Index.vue"),
+        // },
+        // {
+        //   path: "/group-exercises/:id/edit",
+        //   name: "group_exercises.edit",
+        //   component: () => import("@/views/group_exercises/Edit.vue"),
+        // },
+        // {
+        //   path: "/group-exercises/create",
+        //   name: "group_exercises.create",
+        //   component: () => import("@/views/group_exercises/Create.vue"),
+        // },
         //==============exercise================
         {
           path: "/exercises",
@@ -92,6 +92,11 @@ const router = createRouter({
           path: "/exercises/:id/edit",
           name: "exercises.edit",
           component: () => import("@/views/exercises/Edit.vue"),
+        },
+        {
+          path: "/exercises/:id",
+          name: "exercises.show",
+          component: () => import("@/views/exercises/Show.vue"),
         },
         {
           path: "/exercises/create",

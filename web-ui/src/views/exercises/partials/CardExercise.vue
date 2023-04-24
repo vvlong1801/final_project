@@ -3,48 +3,44 @@ import { defineProps } from "vue";
 const props = defineProps(["exercise"]);
 </script>
 <template>
-  <Card class="w-full !rounded-xl">
-    <template #header>
-      <img class="rounded-xl" alt="user header" :src="exercise.image.url" />
-    </template>
-    <template #content>
-      <div class="flex flex-col gap-2">
-        <div class="flex gap-2 justify-between">
-          <p class="text-lg">{{ exercise.name }}</p>
-          <Badge value="easy" severity="success"></Badge>
-        </div>
-        <div class="flex gap-2 justify-between items-center">
-          <div class="flex space-x-2 items-center">
-            <i class="w-4 h-4 pi" :class="exercise.type.icon" />
-            <span>{{ exercise.type.label }}</span>
-          </div>
-          <div class="flex">
-            <img
-              :src="mus.image.url"
-              v-for="mus in exercise.muscles"
-              class="w-4 h-4"
-            />
-          </div>
+  <div
+    class="card h-28 p-4 flex gap-4"
+    @click="
+      $router.push({
+        name: 'exercises.show',
+        params: {
+          id: 1,
+        },
+      })
+    "
+  >
+    <img
+      src="@/assets/images/panel.jpg"
+      alt="abc"
+      class="w-20 h-20 object-cover rounded-md"
+    />
+    <div class="content w-full py-1 flex flex-col justify-between">
+      <div class="flex justify-between items-center">
+        <p class="font-bold text-lg">Exercise name</p>
+        <div class="space-x-2">
+          <i
+            class="pi pi-pencil cursor-pointer"
+            @click.stop="
+              $router.push({
+                name: 'exercises.edit',
+                params: {
+                  id: 1,
+                },
+              })
+            "
+          ></i>
+          <i class="pi pi-trash cursor-pointer"></i>
         </div>
       </div>
-    </template>
-    <template #footer>
-      <div class="w-full space-x-4 text-right">
-        <Button
-          icon="pi pi-trash"
-          class="p-button-outlined p-button-sm p-button-danger !rounded-lg"
-        />
-        <Button
-          icon="pi pi-eye"
-          class="p-button-outlined p-button-sm !rounded-lg"
-          @click="
-            $router.push({
-              name: 'group_exercises.edit',
-              params: { id: exercise.id },
-            })
-          "
-        />
+      <div class="flex justify-between items-center">
+        <p class="font-normal text-sm text-gray-500">exercise group</p>
+        <p class="font-normal text-sm text-gray-500">by author</p>
       </div>
-    </template>
-  </Card>
+    </div>
+  </div>
 </template>

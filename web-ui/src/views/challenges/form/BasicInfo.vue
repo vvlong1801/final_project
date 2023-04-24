@@ -4,6 +4,8 @@ import { useChallenge } from "@/stores/challenge";
 import { onMounted } from "vue";
 import { status } from "@/utils/option";
 import { useToast } from "primevue/usetoast";
+import Panel from "primevue/panel";
+import InputNumber from "primevue/inputnumber";
 
 const challengeStore = useChallenge();
 const toast = useToast();
@@ -45,92 +47,70 @@ const onUpload = async (event, type) => {
 };
 </script>
 <template>
-  <div class="card flex flex-col space-y-6 min-h-full">
-    <div class="grid grid-cols-5 gap-4">
-      <label id="title" class="col-span-2">
-        <div>Name</div>
-        <input-text
-          id="name"
-          placeholder="enter name..."
-          class="w-full"
-          v-model="challengeStore.form.name"
-        />
-      </label>
-      <label for="type" class="row-start-2 col-span-2">
-        <div>Type</div>
-        <Dropdown
-          id="type"
-          class="w-full"
-          v-model="challengeStore.form.type"
-          :options="challengeStore.challengeTypes"
-          placeholder="enter type"
-        />
-      </label>
-      <label for="status" class="row-start-3 col-span-2">
-        <div>Status</div>
-        <Dropdown
-          id="status"
-          class="w-full"
-          :options="status"
-          v-model="challengeStore.form.status"
-          placeholder="enter status"
-        />
-      </label>
-      <label for="image" class="row-start-1 col-span-3 row-span-3 col-start-3">
-        <div>Banner</div>
-        <FileUpload
-          name="image"
-          accept="image/*"
-          :maxFileSize="1000000"
-          @uploader="onUpload($event, 'image')"
-          auto
-          custom-upload
-        >
-          <template
-            #header="{ chooseCallback, uploadCallback, clearCallback, files }"
-          >
-            <div class="flex space-x-4 items-center justify-center">
-              <Button @click="chooseCallback" icon="pi pi-cloud-upload" />
-              <span v-if="challengeStore.form.image">{{
-                challengeStore.form.image?.filename
-              }}</span>
-            </div>
-          </template>
-          <template #content>
-            <Image
-              v-if="challengeStore.form.image"
-              :src="challengeStore.form.image?.url"
-              :alt="challengeStore.form.image?.name"
-              class="w-full flex justify-center items-center"
-            />
-            <div v-else>
-              <p>Drag and drop files to here to upload.</p>
-            </div>
-          </template>
-        </FileUpload>
-      </label>
-      <label for="description" class="col-span-5">
-        <div>Description</div>
-        <Textarea
-          id="description"
-          v-model="challengeStore.form.description"
-          class="w-full"
-          rows="3"
-        />
-      </label>
+  <div class="grid grid-cols-2 gap-6">
+    <div class="card col-span-2">
+      <Panel header="Challenge Settings">
+        <div class="flex">
+          <div class="w-1/2"></div>
+          <div class="w-1/2">
+            
+          </div>
+        </div>
+      </Panel>
     </div>
-    <div class="flex justify-between">
-      <Button
-        icon="pi pi-angle-left"
-        label="Back"
-        @click="$emit('prevPage', pageIndex)"
-      />
-      <Button
-        icon="pi pi-angle-right"
-        label="Next"
-        @click="$emit('nextPage', pageIndex)"
-        iconPos="right"
-      />
+    <div class="card">
+      <Panel header="Permissions Settings">
+        <div class="grid grid-cols-2 gap-6">
+          <div class="p-inputgroup flex-1">
+            <span class="p-inputgroup-addon">
+              <p>limited scope of participation</p>
+            </span>
+
+            <Dropdown placeholder="All" class="w-full md:w-14rem" />
+          </div>
+          <div class="p-inputgroup flex-1">
+            <span class="p-inputgroup-addon">
+              <p>member censorship</p>
+            </span>
+
+            <Dropdown placeholder="All" class="w-full md:w-14rem" />
+          </div>
+          <div class="p-inputgroup flex-1">
+            <span class="p-inputgroup-addon">
+              <p>result censorship</p>
+            </span>
+
+            <Dropdown placeholder="All" class="w-full md:w-14rem" />
+          </div>
+          <div class="p-inputgroup flex-1">
+            <span class="p-inputgroup-addon">
+              <p>maximum members</p>
+            </span>
+
+            <InputNumber inputId="maxNumber" :min="0"  />
+          </div>
+        </div>
+      </Panel>
+    </div>
+    <div class="card">
+      <Panel header="Conditions of participation">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do</p>
+      </Panel>
+    </div>
+    <div class="card col-span-2">
+      <div class="flex justify-between">
+        <Button
+          icon="pi pi-angle-left"
+          label="Back"
+          @click="$emit('prevPage', pageIndex)"
+        />
+        <Button
+          icon="pi pi-angle-right"
+          label="Next"
+          @click="$emit('nextPage', pageIndex)"
+          iconPos="right"
+        />
+      </div>
     </div>
   </div>
 </template>

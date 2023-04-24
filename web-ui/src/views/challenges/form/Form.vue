@@ -13,15 +13,15 @@ const router = useRouter();
 
 const steps = ref([
   {
-    label: "Basic Information",
+    label: "Information & Permission",
     to: "/challenges/create",
   },
   {
-    label: "Exercise Picker",
+    label: "Plan Template",
     to: "/challenges/create/exercise_picker",
   },
   {
-    label: "Confirmation",
+    label: "Reward",
     to: "/challenges/create/confirmation",
   },
 ]);
