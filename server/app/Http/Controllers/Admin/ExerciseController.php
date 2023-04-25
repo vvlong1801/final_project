@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\DeleteExerciseRequest;
 use App\Http\Requests\Admin\StoreExerciseRequest;
 use App\Http\Resources\collections\ExerciseCollection;
 use App\Http\Resources\ExerciseResource;
+use App\Http\Resources\GroupExerciseResource;
 use App\Services\Interfaces\ExerciseServiceInterface;
 use App\Services\Interfaces\MediaServiceInterface;
 
@@ -32,9 +33,14 @@ class ExerciseController extends Controller
             return $this->getResponse(new ExerciseCollection($exercises), 'get exercises is success');
         } else {
             $exercises = $this->exerciseService->getExercises();
-            return $this->getResponse(ExerciseResource::collection($exercises), 'get exercises is success');
+            return $this->responseOk(ExerciseResource::collection($exercises), 'get exercises is success');
         }
-        // ExerciseResource::collection($exercises)
+    }
+
+    public function getGroups()
+    {
+        $groups = $this->exerciseService->getGroupExercises();
+        return $this->responseOk(GroupExerciseResource::collection($groups), 'success');
     }
 
     /**
@@ -45,8 +51,7 @@ class ExerciseController extends Controller
     public function findById($id)
     {
         $exercise = $this->exerciseService->getExerciseById($id);
-        return $this->getResponse(new ExerciseResource($exercise), 'get exercises is success');
-        // ExerciseResource::collection($exercises)
+        return $this->responseOk(new ExerciseResource($exercise), 'get exercises is success');
     }
 
     /**
@@ -57,7 +62,7 @@ class ExerciseController extends Controller
     public function create(StoreExerciseRequest $request)
     {
         $payload = $request->validated();
-
+        $payload['created_by'] = $request->user()->id;
 
         try {
             $payload['gif'] = $this->mediaService->createMedia($payload['gif']);
@@ -69,7 +74,7 @@ class ExerciseController extends Controller
             }
 
             $result = $this->exerciseService->createExercise($payload);
-            return $this->responseOk($result, 'muscle created');
+            return $this->responseOk($result, 'exercise created');
         } catch (\Throwable $th) {
             abort(404, $th->getMessage());
         }
@@ -85,15 +90,21 @@ class ExerciseController extends Controller
     public function update($id, StoreExerciseRequest $request)
     {
         $payload = $request->validated();
-        $gif = \Arr::get($payload, 'gif', false);
-        $video = \Arr::get($payload, 'video', false);
-        $image = \Arr::get($payload, 'image', false);
+        $payload['created_by'] = $request->user()->id;
+        try {
+            $payload['gif'] = $this->mediaService->createMedia($payload['gif']);
+            $payload['image'] = $this->mediaService->createMedia($payload['image']);
 
-        $payload['gif'] = $gif ? $this->mediaService->createMedia($gif) : null;
-        $payload['video'] = $video ? $this->mediaService->createMedia($video) : null;
-        $payload['image'] = $image ? $this->mediaService->createMedia($image) : null;
-        $exercise = $this->exerciseService->updateExercise($id, $payload);
-        return $this->getResponse(new ExerciseResource($exercise), 'muscle updated');
+            $video = \Arr::get($payload, 'video', false);
+            if ($video) {
+                $payload['video'] =  $this->mediaService->createMedia($video);
+            }
+
+            $result = $this->exerciseService->updateExercise($id, $payload);
+            return $this->responseOk($result, 'exercise updated');
+        } catch (\Throwable $th) {
+            abort(404, $th->getMessage());
+        }
     }
 
     /**
@@ -107,7 +118,7 @@ class ExerciseController extends Controller
         $ids = \Arr::get($request->validated(), 'ids', []);
         try {
             $this->exerciseService->deleteExercise($ids);
-            return $this->getResponse(null, 'muscle deleted', 204);
+            return $this->responseOk(null, 'exercise deleted', 204);
         } catch (\Throwable $th) {
             abort(400, 'delete exercise is error');
         }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Exercise;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreExerciseRequest extends FormRequest
@@ -11,7 +12,15 @@ class StoreExerciseRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        if (($id = $this->route('id')) !== null) {
+            try {
+                $exercise = Exercise::findOrFail($id);
+                return $this->user()->can('update', $exercise);
+            } catch (\Throwable $th) {
+                abort(404, 'cannot found this exercise');
+            }
+        }
+        return $this->user()->can('create', Exercise::class);
     }
 
     /**
@@ -23,10 +32,11 @@ class StoreExerciseRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'level' => '',
-            'type' => 'required',
-            'equipment' => '',
-            'groupExercises' => '', // check exist
+            'level' => 'required',
+            'type' => '',
+            'evaluate_method' => 'required',
+            'equipment_id' => '',
+            'group_exercises' => '',
             'muscles' => 'required',
             'description' => '',
             'gif' => 'required',

@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\EvaluateMethod;
 use App\Enums\Level;
 use App\Enums\MediaType;
-use App\Enums\TypeExercise;
+use App\Enums\Role;
+use App\Supports\Helper;
+use Exception;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,11 +18,6 @@ class Exercise extends Model
     use HasFactory;
 
     protected $guarded = [];
-    // protected $casts = [
-    //     'type' => TypeExercise::class,
-    //     'level' => Level::class,
-    // ];
-
     //=========== convert attribute ============
     //==========================================
     public function level(): Attribute
@@ -29,19 +28,15 @@ class Exercise extends Model
         );
     }
 
-    public function type(): Attribute
+    public function evaluateMethod(): Attribute
     {
         return Attribute::make(
-            set: fn ($name) => TypeExercise::fromName($name),
-            get: fn ($value) => TypeExercise::fromValue($value),
+            set: fn ($name) => EvaluateMethod::fromName($name),
+            get: fn ($value) => EvaluateMethod::fromValue($value),
         );
     }
     //=========== create relationship ==========
     //==========================================
-    public function favourites()
-    {
-        return $this->morphMany(Favourite::class, 'favouriteable');
-    }
 
     public function equipment()
     {
@@ -78,8 +73,14 @@ class Exercise extends Model
         return $this->belongsToMany(GroupExercise::class);
     }
 
-    public function planItems()
+    public function createdBy()
     {
-        return $this->belongsToMany(PlanItem::class);
+        $user =  $this->belongsTo(User::class, 'created_by');
+
+        if ($user->first()->belongsRoles([Role::admin, Role::creator, Role::superAdmin])) {
+            return $user;
+        } else {
+            throw new Exception("user created this exercise who isn't creator", 1);
+        }
     }
 }

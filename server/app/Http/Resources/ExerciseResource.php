@@ -19,6 +19,8 @@ class ExerciseResource extends JsonResource
             "name" => $this->name,
             "level" => $this->level,
             "type" => $this->type,
+            "created_by" =>  $this->createdBy->name,
+            "evaluate_method" => $this->evaluate_method,
             "equipment" => new EquipmentResource($this->equipment),
             "muscles" => MuscleResource::collection($this->muscles),
             "description" => $this->description,

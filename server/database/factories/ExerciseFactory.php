@@ -21,8 +21,8 @@ class ExerciseFactory extends Factory
     {
         return [
             'name' => fake()->text(10),
-            'level' => Helper::randArray(Level::getValues()),
-            'evaluate_method' => Helper::randArray(EvaluateMethod::getValues()),
+            'level' => Helper::randArray(Level::getNames()),
+            'evaluate_method' => Helper::randArray(EvaluateMethod::getNames()),
             'description' => fake()->text(100),
         ];
     }

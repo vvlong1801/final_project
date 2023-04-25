@@ -47,7 +47,7 @@ const onUpload = async (event, type) => {
 };
 </script>
 <template>
-  <div class="grid grid-cols-2 gap-6">
+  <div class="flex-col space-y-6">
     <div class="card col-span-2">
       <Panel header="Challenge Settings">
         <div class="flex">
@@ -62,28 +62,28 @@ const onUpload = async (event, type) => {
       <Panel header="Permissions Settings">
         <div class="grid grid-cols-2 gap-6">
           <div class="p-inputgroup flex-1">
-            <span class="p-inputgroup-addon">
+            <span class="p-inputgroup-addon w-1/2 !justify-start">
               <p>limited scope of participation</p>
             </span>
 
             <Dropdown placeholder="All" class="w-full md:w-14rem" />
           </div>
           <div class="p-inputgroup flex-1">
-            <span class="p-inputgroup-addon">
+            <span class="p-inputgroup-addon w-1/2 !justify-start">
               <p>member censorship</p>
             </span>
 
             <Dropdown placeholder="All" class="w-full md:w-14rem" />
           </div>
           <div class="p-inputgroup flex-1">
-            <span class="p-inputgroup-addon">
+            <span class="p-inputgroup-addon w-1/2 !justify-start">
               <p>result censorship</p>
             </span>
 
             <Dropdown placeholder="All" class="w-full md:w-14rem" />
           </div>
           <div class="p-inputgroup flex-1">
-            <span class="p-inputgroup-addon">
+            <span class="p-inputgroup-addon w-1/2 !justify-start">
               <p>maximum members</p>
             </span>
 

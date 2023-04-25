@@ -15,6 +15,7 @@ trait HasRoles
      */
     private function isRole($role)
     {
+        // dd($this->account->role == $role);
         return $this->account->role == $role;
     }
 
@@ -62,13 +63,6 @@ trait HasRoles
     {
         return Attribute::make(
             get: fn () => $this->isRole(Role::superAdmin)
-        );
-    }
-
-    public function hasAdminPermissions(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->belongsRoles([Role::admin, Role::superAdmin])
         );
     }
 }

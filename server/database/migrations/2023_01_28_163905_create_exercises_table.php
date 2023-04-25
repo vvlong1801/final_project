@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('level');
+            $table->integer('type')->default(1);
             $table->unsignedBigInteger('created_by');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->integer('evaluate_method')->comment('0: repitition, 1: time-based, 2: distance-based');

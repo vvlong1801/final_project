@@ -14,6 +14,11 @@ class ExerciseService extends BaseService implements ExerciseServiceInterface
         return Exercise::with(['gif', 'image', 'video', 'groupExercises'])->get();
     }
 
+    public function getGroupExercises()
+    {
+        return GroupExercise::select(['id', 'name'])->get();
+    }
+
     public function getExercisesWithPagination($perPage)
     {
         return Exercise::paginate($perPage);
@@ -21,23 +26,36 @@ class ExerciseService extends BaseService implements ExerciseServiceInterface
 
     public function getExerciseById($id)
     {
-        return Exercise::find($id);
+        return Exercise::findOrFail($id);
     }
 
     public function createExercise(array $payload)
     {
-        $payload['equipment_id'] = \Arr::get($payload, 'equipment', 0);
         \DB::beginTransaction();
         try {
-            $exercise = Exercise::create(\Arr::only($payload, ['name', 'level', 'type', 'equipment_id', 'description']));
+            $exercise = Exercise::create(\Arr::only($payload, ['name', 'level', 'created_by', 'evaluate_method', 'equipment_id', 'description']));
 
             $exercise->gif()->save($payload['gif']);
             $exercise->image()->save($payload['image']);
             if ($payload['video']) $exercise->video()->save($payload['video']);
 
             $exercise->muscles()->attach(\Arr::get($payload, 'muscles', []));
-            dd($payload['groupExercises']);
-            $exercise->groupExercises()->attach(\Arr::get($payload, 'groupExercises', []));
+
+            $groupCollect = collect(\Arr::get($payload, 'group_exercises', []))->groupBy(function ($item, $key) {
+                return \Arr::exists($item, 'id') ? 'existed' : 'not_existed';
+            });
+
+            if ($groupCollect->get('not_existed') !== null) {
+                $notExistedGroups = $groupCollect->get('not_existed')->map(function ($item) use ($payload) {
+                    $item['created_by'] = $payload['created_by'];
+                    return $item;
+                })->all();
+                $exercise->groupExercises()->createMany($notExistedGroups);
+            }
+
+            if ($groupCollect->get('existed') !== null) {
+                $exercise->groupExercises()->attach($groupCollect->get('existed')->pluck('id')->all());
+            }
 
             \DB::commit();
             return true;
@@ -49,16 +67,39 @@ class ExerciseService extends BaseService implements ExerciseServiceInterface
 
     public function updateExercise($id, array $payload)
     {
-        $exercise = Exercise::find($id);
-        $payload['equipment_id'] = \Arr::get($payload, 'equipment', 0);
-        $exercise->update(\Arr::only($payload, ['name', 'level', 'type', 'equipment_id', 'description']));
+        \DB::beginTransaction();
+        try {
+            $exercise = Exercise::findOrFail($id);
+            $exercise->update(\Arr::only($payload, ['name', 'level', 'created_by', 'evaluate_method', 'equipment_id', 'description']));
+            $exercise->gif()->update($payload['gif']->getAttributes());
+            $exercise->image()->update($payload['image']->getAttributes());
+            if ($payload['video']) $exercise->video()->update($payload['video']->getAttributes());
 
-        if ($payload['gif']) $exercise->gif()->update($payload['gif']->getAttributes());
-        if ($payload['image']) $exercise->image()->update($payload['image']->getAttributes());
-        if ($payload['video']) $exercise->video()->update($payload['video']->getAttributes());
+            $exercise->muscles()->sync(\Arr::get($payload, 'muscles', []));
 
-        $exercise->muscles()->sync(\Arr::get($payload, 'muscles', []));
-        $exercise->groupExercises()->sync(\Arr::get($payload, 'groupExercises', []));
+            $groupCollect = collect(\Arr::get($payload, 'group_exercises', []))->groupBy(function ($item, $key) {
+                return \Arr::exists($item, 'id') ? 'existed' : 'not_existed';
+            });
+
+
+            if ($groupCollect->get('not_existed') !== null) {
+                $notExistedGroups = $groupCollect->get('not_existed')->map(function ($item) use ($payload) {
+                    $item['created_by'] = $payload['created_by'];
+                    return $item;
+                })->all();
+                $exercise->groupExercises()->createMany($notExistedGroups);
+            }
+            if ($groupCollect->get('existed') !== null) {
+                // dd($exercise->groupExercises()->sync($groupCollect->get('existed')->pluck('id')->all()));
+                $exercise->groupExercises()->sync($groupCollect->get('existed')->pluck('id')->all());
+            }
+            \DB::commit();
+            return true;
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw $th;
+        }
+
 
         return $exercise;
     }
