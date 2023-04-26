@@ -23,10 +23,18 @@ class StoreChallengeRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'type' => '',
-            'image' => '',
-            'exercises' => 'array',
             'description' => '',
+            'type' => 'required',
+            'image' => 'required',
+            'max_member' => 'required',
+            'commit_point' => 'required|numeric',
+            'participant' => 'required',
+            'required_approve' => 'required',
+            'member_censorship' => 'required',
+            'result_censorship' => 'required',
+            'released_at' => 'required',
+            'finished_at' => '',
+            'phases' => 'array',
         ];
     }
 }

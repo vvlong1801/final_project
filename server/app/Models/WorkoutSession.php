@@ -18,6 +18,6 @@ class WorkoutSession extends Model
 
     public function exercises()
     {
-        return $this->belongsToMany(Exercise::class)->orderByPivot('order');
+        return $this->belongsToMany(Exercise::class)->using(SessionExercise::class)->orderByPivot('order');
     }
 }

@@ -14,11 +14,10 @@ use App\Services\Interfaces\MediaServiceInterface;
 class ChallengeController extends Controller
 {
     protected $challengeService;
-    protected $mediaService;
-    public function __construct(ChallengeServiceInterface $challengeService, MediaServiceInterface $mediaService)
+
+    public function __construct(ChallengeServiceInterface $challengeService)
     {
         $this->challengeService = $challengeService;
-        $this->mediaService = $mediaService;
     }
     /**
      * Display a listing of the resource.
@@ -32,11 +31,11 @@ class ChallengeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function create(StoreChallengeRequest $request)
+    public function create(StoreChallengeRequest $request, MediaServiceInterface $mediaService)
     {
         $payload = $request->validated();
-        $image = \Arr::get($payload, 'image', false);
-        $payload['image'] = $image ? $this->mediaService->createMedia($image) : null;
+        $image = \Arr::get($payload, 'image', null);
+        $payload['image'] = $mediaService->createMedia($image);
         $challenge = $this->challengeService->createChallenge($payload);
 
         return $this->getResponse(new ChallengeResource($challenge), 'challenge created');
@@ -51,20 +50,15 @@ class ChallengeController extends Controller
         return $this->getResponse(new ChallengeResource($challenge), 'get challenge is success');
     }
 
-    // public function getChallengeTypes()
-    // {
-    //     $challengeTypes = $this->challengeService->getChallengeTypes();
-    //     return $this->getResponse($challengeTypes, 'get challenge types success');
-    // }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update($id, StoreChallengeRequest $request)
+    public function update($id, StoreChallengeRequest $request,  MediaServiceInterface $mediaService)
     {
         $payload = $request->validated();
         $image = \Arr::get($payload, 'image', false);
-        $payload['image'] = $image ? $this->mediaService->createMedia($image) : null;
+        $payload['image'] = $image ? $mediaService->createMedia($image) : null;
         $challenge = $this->challengeService->updateChallenge($id, $payload);
 
         return $this->getResponse(new ChallengeResource($challenge), 'challenge updated');

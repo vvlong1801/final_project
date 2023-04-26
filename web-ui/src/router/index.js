@@ -55,7 +55,7 @@ const router = createRouter({
               path: "/challenges/create/exercise_picker",
               name: "challenges.create.exercise_picker",
               component: () =>
-                import("@/views/challenges/form/ExercisePicker.vue"),
+                import("@/views/challenges/form/ChallengePhase.vue"),
             },
             {
               path: "/challenges/create/confirmation",
