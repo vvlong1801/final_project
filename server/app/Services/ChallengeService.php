@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Enums\StatusChallenge;
 use App\Models\Challenge;
 use App\Models\ChallengePhase;
+use App\Models\ExerciseRequirement;
+use App\Models\SessionExercise;
 use App\Models\WorkoutSession;
 use App\Services\Interfaces\ChallengeServiceInterface;
 use Illuminate\Support\Arr;
@@ -40,7 +42,8 @@ class ChallengeService extends BaseService implements ChallengeServiceInterface
             $challenge->image()->save($payload['image']);
 
             $phases = \Arr::get($payload, 'phases', []);
-            $challenge->phases()->saveMany($this->createChallengePhase($phases));
+
+            $this->createChallengePhase($challenge, $phases);
 
             \DB::commit();
             return true;
@@ -50,26 +53,24 @@ class ChallengeService extends BaseService implements ChallengeServiceInterface
         }
     }
 
-    private function createChallengePhase($phases)
+    private function createChallengePhase(Challenge $challenge, array $payload)
     {
-        if (!count($phases)) throw new \Exception("challenge hasn't phases", 1);
+        if (!count($payload)) throw new \Exception("challenge hasn't phases", 1);
 
         $result = [];
 
-        foreach ($phases as $index => $phase) {
+        foreach ($payload as $index => $data) {
             // dd($phase);
-            $newPhase = new ChallengePhase(\Arr::only($phase, [
+            $newPhase = new ChallengePhase(\Arr::only($data, [
                 'name', 'level', 'description',
                 'min_rank', 'max_rank', 'active_days', 'rest_days'
             ]));
             $newPhase->order = $index;
             $newPhase->count_sessions =
-                count(\Arr::get($phase, 'sessions', null)) ?? throw new \Exception("Hasn't workout session in the phase", 1);
-            // $newPhase->save();
+                count(\Arr::get($data, 'sessions', null)) ?? throw new \Exception("Hasn't workout session in the phase", 1);
+            $challenge->phases()->save($newPhase);
 
-            $sessions = $this->createSessions($phase['sessions']);
-
-            $newPhase->sessions()->saveMany($sessions);
+            $this->createSessions($newPhase, $data['sessions']);
             dd($newPhase);
             \Arr::add($result, $index, $newPhase);
         }
@@ -77,25 +78,42 @@ class ChallengeService extends BaseService implements ChallengeServiceInterface
         return $result;
     }
 
-    private function createSessions($sessions)
+    private function createSessions(ChallengePhase $phase, $sessions)
     {
         // if (!count($sessions)) throw new \Exception("the phase hasn't sessions", 1);
 
-        $result = [];
+        $collectSessions = collect([]);
         foreach ($sessions as $index => $session) {
-            $data = new WorkoutSession(['name' => 'day ' . $index, 'order' => $index]);
-            // dd($session);
+            $newSession = $phase->sessions()->create(['name' => 'day ' . $index, 'order' => $index]);
+            // $collectExercises = collect([]);
             foreach ($session as $key => $exercise) {
-                $ssExercise = $data->exercises()->newPivot(['order' => $key, 'is_primary' => true]);
-                foreach ($exercise['requirement'] as $req) {
-                    $res = \Arr::where(config('constant.param_requirement'), fn ($value, $key) => $key === $req['param']);
+                $ssExercise = $newSession->exercises()->newPivot(['order' => $key, 'is_primary' => true, 'exercise_id' => $exercise['exercise_id']]);
+                $requires = collect([]);
+
+                foreach ($exercise['requirement'] as $k => $req) {
+                    $param = $req['param'];
+                    $data = \Arr::where(config('constant.param_requirement'), fn ($value, $key) => $key === $param);
+
+                    $newReq = new ExerciseRequirement([
+                        'param' => $param,
+                        'param_type' => $data[$param]['type'],
+                        'unit' => $data[$param]['unit'],
+                        'value' => $req['value'],
+                        'order' => $k,
+                    ]);
+                    $requires->push($newReq);
                 }
-                $ssExercise->requirements()->createMany()
+
+                $ssExercise->requirements()->createMany($requires->toArray());
+                dd($ssExercise);
+                // $collectExercises->push($ssExercise);
             }
+
+            dd($data);
             $data->exercises()->attach();
-            \Arr::add($result, $index, $data);
+            \Arr::add($collectSessions, $index, $data);
         }
-        return $result;
+        return $collectSessions;
     }
 
     public function updateChallenge($id, array $payload)
