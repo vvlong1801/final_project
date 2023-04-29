@@ -17,8 +17,8 @@ return new class extends Migration
             $table->integer('order');
             $table->integer('level');
             $table->string('name')->nullable();
-            $table->integer('min_rank')->default(0)->comment('0: newbie, 1: beginner, 2: middle, 3: advanced, 4: pro');
-            $table->integer('max_rank')->default(4)->comment('0: newbie, 1: beginner, 2: middle, 3: advanced, 4: pro');
+            $table->integer('min_rank')->default(0)->comment('0: beginner, 1: middle, 2:senior, 3:pro');
+            $table->integer('max_rank')->default(4)->comment('0: beginner, 1: middle, 2:senior, 3:pro');
             $table->integer('count_sessions');
             $table->integer('active_days');
             $table->integer('rest_days');

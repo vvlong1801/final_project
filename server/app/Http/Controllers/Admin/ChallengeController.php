@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\TypeChallenge;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreChallengeRequest;
 use App\Http\Resources\ChallengeResource;
-use App\Http\Resources\ChallengeTypeResource;
 
 use App\Services\Interfaces\ChallengeServiceInterface;
 use App\Services\Interfaces\MediaServiceInterface;

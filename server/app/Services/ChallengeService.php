@@ -35,8 +35,13 @@ class ChallengeService extends BaseService implements ChallengeServiceInterface
             ]));
             $challenge->status = StatusChallenge::init;
             $challenge->save();
+            // dd($challenge->created_by);
+
             $challenge->image()->save($payload['image']);
-            $challenge->phases()->saveMany($this->createChallengePhase(\Arr::get($payload, 'phases', [])));
+
+            $phases = \Arr::get($payload, 'phases', []);
+            $challenge->phases()->saveMany($this->createChallengePhase($phases));
+
             \DB::commit();
             return true;
         } catch (\Throwable $th) {
@@ -47,28 +52,46 @@ class ChallengeService extends BaseService implements ChallengeServiceInterface
 
     private function createChallengePhase($phases)
     {
-        if (count($phases)) throw new \Exception("challenge hasn't phases", 1);
+        if (!count($phases)) throw new \Exception("challenge hasn't phases", 1);
 
         $result = [];
+
         foreach ($phases as $index => $phase) {
-            $data = new ChallengePhase(\Arr::only($phase, [
+            // dd($phase);
+            $newPhase = new ChallengePhase(\Arr::only($phase, [
                 'name', 'level', 'description',
                 'min_rank', 'max_rank', 'active_days', 'rest_days'
             ]));
-            $data->order = $index;
-            $data->count_sessions = count(\Arr::get($phase, 'sessions', null)) ?? throw new \Exception("Hasn't workout session in the phase", 1);
-            \Arr::add($result, $index, $data);
+            $newPhase->order = $index;
+            $newPhase->count_sessions =
+                count(\Arr::get($phase, 'sessions', null)) ?? throw new \Exception("Hasn't workout session in the phase", 1);
+            // $newPhase->save();
+
+            $sessions = $this->createSessions($phase['sessions']);
+
+            $newPhase->sessions()->saveMany($sessions);
+            dd($newPhase);
+            \Arr::add($result, $index, $newPhase);
         }
+
         return $result;
     }
 
     private function createSessions($sessions)
     {
-        if (count($sessions)) throw new \Exception("the phase hasn't sessions", 1);
+        // if (!count($sessions)) throw new \Exception("the phase hasn't sessions", 1);
 
         $result = [];
         foreach ($sessions as $index => $session) {
             $data = new WorkoutSession(['name' => 'day ' . $index, 'order' => $index]);
+            // dd($session);
+            foreach ($session as $key => $exercise) {
+                $ssExercise = $data->exercises()->newPivot(['order' => $key, 'is_primary' => true]);
+                foreach ($exercise['requirement'] as $req) {
+                    $res = \Arr::where(config('constant.param_requirement'), fn ($value, $key) => $key === $req['param']);
+                }
+                $ssExercise->requirements()->createMany()
+            }
             $data->exercises()->attach();
             \Arr::add($result, $index, $data);
         }
