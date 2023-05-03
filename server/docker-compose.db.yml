@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  mysql_container:
+    image: mysql:8.0
+    container_name: mysql_container
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql:/var/lib/mysql
+
+volumes:
+  mysql:
+    name: mysql-db
+
+networks:
+  mysql:
+    driver: bridge
