@@ -22,6 +22,12 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
 ## Enviroment Setup
+
+### Docker install
+```bash
+$ curl -fsSL https://get.docker.com -o get-docker.sh 
+$ sh get-docker.sh
+```
 ### Database
 ```bash
 
