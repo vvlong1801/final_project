@@ -38,3 +38,8 @@ $ docker compose -f "server\docker-compose.db.yml" up -d --build
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+## Author
+
+Update readme
