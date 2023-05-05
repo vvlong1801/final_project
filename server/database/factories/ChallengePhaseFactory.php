@@ -18,7 +18,7 @@ class ChallengePhaseFactory extends Factory
     public function definition(): array
     {
         return [
-            'level' => Level::easy,
+            'level' => Level::easy->name,
             'order' => 1,
             'count_sessions' => 7,
             'active_days' => 6,

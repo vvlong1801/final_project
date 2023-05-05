@@ -7,6 +7,7 @@ use App\Models\Challenge;
 use App\Models\ChallengePhase;
 use App\Models\ChallengeType;
 use App\Models\Exercise;
+use App\Models\SessionExercise;
 use App\Models\WorkoutSession;
 use App\Supports\Helper;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -34,30 +35,11 @@ class ChallengeSeeder extends Seeder
                 ->sequence(fn (Sequence $sequence) => [
                     'order' => $sequence->index
                 ])
-                ->hasAttached($exercises->random(3), new Sequence(
-                    fn (Sequence $sequence) => ['order' => $sequence->index],
-                ))
+                ->has(SessionExercise::factory()->count(5)->sequence(fn (Sequence $sequence) => [
+                    'order' => $sequence->index,
+                    'exercise_id' => $exercises->pluck('id')->random(1)->first()
+                ]), 'exercises')
                 ->create();
         }
-        // $challenges = Challenge::factory()->count(3)
-        //     ->has(
-        //         ChallengePhase::factory()
-        //             ->has(
-        //                 WorkoutSession::factory()->count(7)
-        //                     ->sequence(fn (Sequence $sequence) => [
-        //                         'order' => $sequence->index
-        //                     ])
-        //                     ->hasAttached(
-        //                         Exercise::factory()->count(3)
-        //                             ->sequence(fn (Sequence $sequence) => [
-        //                                 'order' => $sequence->index
-        //                             ])
-        //                     )
-        //             )
-        //     )
-        //     ->sequence(fn (Sequence $sequence) => [
-        //         'created_by' => $sequence->index
-        //     ])
-        //     ->create();
     }
 }

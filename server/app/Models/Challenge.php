@@ -10,6 +10,7 @@ use App\Enums\TypeParticipant;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
 
 class Challenge extends Model
 {
@@ -30,7 +31,7 @@ class Challenge extends Model
     {
         return Attribute::make(
             set: fn ($value) => \Carbon\Carbon::createFromFormat('d/m/Y H:i:s', $value),
-            get: fn ($value) => $value->format('d/m/Y H:i:s'),
+            get: fn ($value) => \Carbon\Carbon::parse($value)->format('d/m/Y H:i:s'),
         );
     }
     // protected function finishedAt(): Attribute
@@ -96,5 +97,10 @@ class Challenge extends Model
     public function image()
     {
         return $this->morphOne(Media::class, 'mediable');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
     }
 }

@@ -13,13 +13,17 @@ return new class extends Migration
     {
         Schema::create('exercise_requirements', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('item_session_id');
-            $table->foreign('item_session_id')->references('id')->on('exercise_workout_session')->cascadeOnDelete();
-            $table->integer('param');
-            $table->integer('param_type');
+            $table->unsignedBigInteger('session_exercise_id');
+            $table->foreign('session_exercise_id')->references('id')->on('exercise_workout_session')->cascadeOnDelete();
+            $table->string('param');
+            $table->string('param_type');
             $table->double('value');
-            $table->integer('unit');
+            $table->string('unit');
             $table->integer('order');
+            $table->timestamps();
+
+            // constrained between requirements
+
             // $table->unsignedBigInteger('constrained');
             // $table->foreign('constrained')->references('id')->on('exercise_requirements');
         });

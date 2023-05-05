@@ -17,10 +17,15 @@ class ChallengeResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'type' => $this->type->name,
+            'type' => $this->type,
             'image' => new MediaResource($this->image),
             'description' => $this->description,
-            'exercises_count' => $this->exercises_count,
+            'created_by' => $this->createdBy->name,
+            'max_member' => $this->max_member,
+            'commit_point' => $this->commit_point,
+            'status' => $this->status,
+            'released_at' => $this->released_at,
+            'phases' => ChallengePhaseResource::collection($this->phases),
         ];
     }
 }

@@ -16,8 +16,8 @@ class WorkoutSession extends Model
         return $this->belongsTo(ChallengePhase::class);
     }
 
-    public function exercises()
+    public function sessionExercises()
     {
-        return $this->belongsToMany(Exercise::class)->using(SessionExercise::class)->orderByPivot('order');
+        return $this->hasMany(SessionExercise::class);
     }
 }

@@ -83,4 +83,9 @@ class Exercise extends Model
             throw new Exception("user created this exercise who isn't creator", 1);
         }
     }
+
+    public function sessionExercises()
+    {
+        return $this->hasMany(SessionExercise::class);
+    }
 }

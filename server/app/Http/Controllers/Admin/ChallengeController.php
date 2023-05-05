@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\TypeChallenge;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreChallengeRequest;
 use App\Http\Resources\ChallengeResource;
@@ -36,6 +35,7 @@ class ChallengeController extends Controller
         $payload = $request->validated();
         $image = \Arr::get($payload, 'image', null);
         $payload['image'] = $mediaService->createMedia($image);
+        $payload['created_by'] = $request->user()->id;
         $challenge = $this->challengeService->createChallenge($payload);
 
         return $this->getResponse(new ChallengeResource($challenge), 'challenge created');
