@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\MediaServices;
 
 use App\Enums\CommonStatus;
 use App\Enums\MediaType;
 use App\Models\Media;
+use App\Services\BaseService;
 use App\Services\Interfaces\MediaServiceInterface;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
@@ -28,6 +29,7 @@ class S3Service extends BaseService implements MediaServiceInterface
     public function upload($payload)
     {
         $file = \Arr::get($payload, 'file', false);
+        dd($file);
         $collection = \Arr::get($payload, 'collection', false);
         $type = \Arr::get($payload, 'type', false);
         if ($file && $collection && $type) {

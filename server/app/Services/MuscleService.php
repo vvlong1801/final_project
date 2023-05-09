@@ -19,31 +19,38 @@ class MuscleService extends BaseService implements MuscleServiceInterface
 
     public function createMuscle(array $payload)
     {
-
-        $muscle = Muscle::create(\Arr::only($payload, ['name', 'description']));
-
-        $muscle->image()->save($payload['image']);
-
-        if ($payload['icon']) {
-            $muscle->icon()->save($payload['icon']);
+        \DB::beginTransaction();
+        try {
+            $muscle = Muscle::create(\Arr::only($payload, ['name', 'description']));
+            $muscle->image()->save($payload['image']);
+            if ($payload['icon']) {
+                $muscle->icon()->save($payload['icon']);
+            }
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw $th;
         }
-        return $muscle;
     }
 
     public function updateMuscle($id, array $payload)
     {
-        $muscle = Muscle::find($id);
-        $muscle->name = \Arr::get($payload, 'name', '');
-        $muscle->description = \Arr::get($payload, 'description', '');
-        $muscle->save();
-        if ($image = \Arr::get($payload, 'image', false)) {
-            $muscle->image()->update($image->getAttributes());
-        }
-        if ($icon = \Arr::get($payload, 'icon', false)) {
-            $muscle->icon()->update($icon->getAttributes());
-        }
+        try {
+            $muscle = Muscle::findOrFail($id);
+            $muscle->name = \Arr::get($payload, 'name', '');
+            $muscle->description = \Arr::get($payload, 'description', '');
+            $muscle->save();
 
-        return $muscle;
+            if ($img = $payload['image']) {
+                $muscle->image()->update($img->getAttributes());
+            }
+
+            if ($icon = $payload['icon']) {
+                $muscle->icon()->update($icon->getAtributes());
+            }
+        } catch (\Throwable $th) {
+            throw new \Exception("not found model", 1);
+        }
     }
 
     public function deleteMuscle($id)

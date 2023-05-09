@@ -49,6 +49,18 @@ class ExercisePolicy
         return $user->id === $exercise->created_by || $user->hasAdminPermissions;
     }
 
+    public function bulkDelete(User $user, $ids): bool
+    {
+        $exercises = Exercise::whereIn('id', $ids)->get();
+        foreach ($exercises as $exercise) {
+            if ($exercise && $user->can('delete', $exercise)) {
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Determine whether the user can restore the model.
      */

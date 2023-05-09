@@ -20,14 +20,26 @@ class ExerciseResource extends JsonResource
             "level" => $this->level,
             "type" => $this->type,
             "created_by" =>  $this->createdBy->name,
+            "groups" => TagResource::collection($this->groupTags),
+
             "evaluate_method" => $this->evaluate_method,
-            "equipment" => new EquipmentResource($this->equipment),
-            "muscles" => MuscleResource::collection($this->muscles),
+            "equipment" => new EquipmentResource(
+                $this->whenLoaded('equipment')
+            ),
+            "muscles" => MuscleResource::collection(
+                $this->whenLoaded('muscles')
+            ),
             "description" => $this->description,
-            "gif" => new MediaResource($this->gif),
-            "image" => new MediaResource($this->image),
-            "video" => new MediaResource($this->video),
-            "group_exercises" => GroupExerciseResource::collection($this->groupExercises),
+            "gif" => new MediaResource(
+                $this->whenLoaded('gif')
+            ),
+            "image" => new MediaResource(
+                $this->whenLoaded('image')
+            ),
+            "video" => new MediaResource(
+                $this->whenLoaded('video')
+            ),
+
         ];
     }
 }

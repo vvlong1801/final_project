@@ -1,5 +1,6 @@
 <script setup>
 import { defineProps } from "vue";
+
 const props = defineProps(["exercise"]);
 </script>
 <template>
@@ -21,7 +22,7 @@ const props = defineProps(["exercise"]);
     />
     <div class="content w-full py-1 flex flex-col justify-between">
       <div class="flex justify-between items-center">
-        <p class="font-bold text-lg">Exercise name</p>
+        <p class="font-bold text-lg">{{ exercise.name }}</p>
         <div class="space-x-2">
           <i
             class="pi pi-pencil cursor-pointer"
@@ -34,13 +35,23 @@ const props = defineProps(["exercise"]);
               })
             "
           ></i>
-          <i class="pi pi-trash cursor-pointer"></i>
+          <i
+            class="pi pi-trash cursor-pointer"
+            @click.stop="$emit('clickDelete', exercise.id)"
+          ></i>
         </div>
       </div>
       <div class="flex justify-between items-center">
-        <p class="font-normal text-sm text-gray-500">exercise group</p>
-        <p class="font-normal text-sm text-gray-500">by author</p>
+        <!-- <p class="font-normal text-sm text-gray-500">exercise group</p> -->
+        <Tag
+          :severity="exercise.level.severity"
+          :value="exercise.level.label"
+        />
+        <p class="font-normal text-sm text-gray-500">
+          {{ exercise.created_by }}
+        </p>
       </div>
     </div>
+    <!-- <ConfirmPopup></ConfirmPopup> -->
   </div>
 </template>

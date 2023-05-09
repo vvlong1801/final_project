@@ -3,7 +3,8 @@
 namespace App\Models;
 
 use App\Enums\CommonStatus;
-use App\Enums\MediaType;
+use App\Enums\MediaCollection;
+use App\Enums\TypeMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,7 +14,8 @@ class Media extends Model
 
     protected $guarded = [];
     protected $casts = [
-        'type' => MediaType::class,
+        'type' => TypeMedia::class,
+        'collection_name' => MediaCollection::class,
         'status' => CommonStatus::class,
     ];
 

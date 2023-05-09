@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\MediaCollection;
 use App\Http\Requests\Admin\StoreMuscleRequest;
 use App\Services\Interfaces\MuscleServiceInterface;
 use App\Http\Controllers\Controller;
@@ -21,47 +22,45 @@ class MuscleController extends Controller
     public function index()
     {
         $muscles = $this->muscleService->getMuscles();
-        return $this->getResponse(MuscleResource::collection($muscles), 'get muscles is success!');
+        return $this->responseOk(MuscleResource::collection($muscles), 'get muscles is success!');
     }
 
     public function create(StoreMuscleRequest $request)
     {
         $payload = $request->validated();
-        $image = \Arr::get($payload, 'image', false);
+        $image = \Arr::get($payload, 'image');
         $icon = \Arr::get($payload, 'icon', false);
 
-        $payload['image'] = $image ? $this->mediaService->createMedia($image) : null;
-        $payload['icon'] = $icon ? $this->mediaService->createMedia($icon) : null;
-
-        if ($payload['image'] !== null) {
-            $muscle = $this->muscleService->createMuscle($payload);
-            return $this->getResponse(new MuscleResource($muscle), 'create muscle is success!');
-        } else {
-            return $this->getResponse([
-                'error' => [
-                    'code' => 422,
-                    'message' => 'cannot find the image file in server'
-                ]
-            ], 422);
+        try {
+            $payload['image'] = $this->mediaService->createMedia($image, MediaCollection::Muscle);
+            $payload['icon'] = $icon ? $this->mediaService->createMedia($icon, MediaCollection::Muscle) : null;
+             $this->muscleService->createMuscle($payload);
+            return $this->responseNoContent('create muscle is success!');
+        } catch (\Throwable $th) {
+            abort(404, $th->getMessage());
         }
     }
 
     public function update($id, StoreMuscleRequest $request)
     {
         $payload = $request->validated();
-        $image = \Arr::get($payload, 'image', false);
+        $image = \Arr::get($payload, 'image');
         $icon = \Arr::get($payload, 'icon', false);
-        $payload['image'] = $image ? $this->mediaService->createMedia($image) : null;
-        $payload['icon'] = $icon ? $this->mediaService->createMedia($icon) : null;
+        try {
+            $payload['image'] = $this->mediaService->updateMedia($image, MediaCollection::Muscle);
+            $payload['icon'] = $icon ? $this->mediaService->updateMedia($icon, MediaCollection::Muscle) : null;
 
-        $muscle = $this->muscleService->updateMuscle($id, $payload);
-        return $this->getResponse(new MuscleResource($muscle), 'update muscle is success!');
+            $this->muscleService->updateMuscle($id, $payload);
+            return $this->responseNoContent('update muscle is success!');
+        } catch (\Throwable $th) {
+            abort(400, $th->getMessage());
+        }
     }
 
     public function delete($id)
     {
         $this->muscleService->deleteMuscle($id);
 
-        return $this->getResponse(null, 'delete muscle is success!');
+        return $this->responseNoContent('delete muscle is success!');
     }
 }

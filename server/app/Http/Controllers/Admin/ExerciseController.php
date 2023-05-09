@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\MediaCollection;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\DeleteExerciseRequest;
 use App\Http\Requests\Admin\StoreExerciseRequest;
-use App\Http\Resources\collections\ExerciseCollection;
 use App\Http\Resources\ExerciseResource;
-use App\Http\Resources\GroupExerciseResource;
 use App\Services\Interfaces\ExerciseServiceInterface;
 use App\Services\Interfaces\MediaServiceInterface;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ExerciseController extends Controller
 {
@@ -30,17 +30,17 @@ class ExerciseController extends Controller
     {
         if ($perPage) {
             $exercises = $this->exerciseService->getExercisesWithPagination($perPage);
-            return $this->getResponse(new ExerciseCollection($exercises), 'get exercises is success');
+            return $this->responseOk(ExerciseResource::collection($exercises), 'get exercises is success');
         } else {
             $exercises = $this->exerciseService->getExercises();
             return $this->responseOk(ExerciseResource::collection($exercises), 'get exercises is success');
         }
     }
 
-    public function getGroups()
+    public function search(Request $payload)
     {
-        $groups = $this->exerciseService->getGroupExercises();
-        return $this->responseOk(GroupExerciseResource::collection($groups), 'success');
+        $exercises = $this->exerciseService->getExercisesByFilters($payload->all(), auth()->id());
+        return $this->responseOk(ExerciseResource::collection($exercises), 'success');
     }
 
     /**
@@ -48,10 +48,16 @@ class ExerciseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function findById($id)
+    public function show($id)
     {
-        $exercise = $this->exerciseService->getExerciseById($id);
-        return $this->responseOk(new ExerciseResource($exercise), 'get exercises is success');
+        try {
+            $exercise = $this->exerciseService->getExerciseById($id);
+            $resource = new ExerciseResource($exercise);
+
+            return $this->responseOk($resource, 'get exercises is success');
+        } catch (\Throwable $th) {
+            abort(404, 'not found data');
+        }
     }
 
     /**
@@ -65,16 +71,16 @@ class ExerciseController extends Controller
         $payload['created_by'] = $request->user()->id;
 
         try {
-            $payload['gif'] = $this->mediaService->createMedia($payload['gif']);
-            $payload['image'] = $this->mediaService->createMedia($payload['image']);
+            $payload['gif'] = $this->mediaService->createMedia($payload['gif'], MediaCollection::Exercise);
+            $payload['image'] = $this->mediaService->createMedia($payload['image'], MediaCollection::Exercise);
 
             $video = \Arr::get($payload, 'video', false);
             if ($video) {
-                $payload['video'] =  $this->mediaService->createMedia($video);
+                $payload['video'] =  $this->mediaService->createMedia($video, MediaCollection::Exercise);
             }
 
-            $result = $this->exerciseService->createExercise($payload);
-            return $this->responseOk($result, 'exercise created');
+            $this->exerciseService->createExercise($payload);
+            return $this->responseNoContent('exercise created');
         } catch (\Throwable $th) {
             abort(404, $th->getMessage());
         }
@@ -92,16 +98,16 @@ class ExerciseController extends Controller
         $payload = $request->validated();
         $payload['created_by'] = $request->user()->id;
         try {
-            $payload['gif'] = $this->mediaService->createMedia($payload['gif']);
-            $payload['image'] = $this->mediaService->createMedia($payload['image']);
+            $payload['gif'] = $this->mediaService->updateMedia($payload['gif'], MediaCollection::Exercise);
+            $payload['image'] = $this->mediaService->updateMedia($payload['image'], MediaCollection::Exercise);
 
             $video = \Arr::get($payload, 'video', false);
             if ($video) {
-                $payload['video'] =  $this->mediaService->createMedia($video);
+                $payload['video'] =  $this->mediaService->updateMedia($video, MediaCollection::Exercise);
             }
 
-            $result = $this->exerciseService->updateExercise($id, $payload);
-            return $this->responseOk($result, 'exercise updated');
+            $this->exerciseService->updateExercise($id, $payload);
+            return $this->responseNoContent('exercise updated');
         } catch (\Throwable $th) {
             abort(404, $th->getMessage());
         }
@@ -113,14 +119,15 @@ class ExerciseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function delete(DeleteExerciseRequest $request)
+    public function destroy(Request $request)
     {
-        $ids = \Arr::get($request->validated(), 'ids', []);
+        $ids = $request->validate(['*' => 'numeric']);
+        $request->user()->can('bulkDelete', [Exercise::class, $ids]);
         try {
             $this->exerciseService->deleteExercise($ids);
-            return $this->responseOk(null, 'exercise deleted', 204);
+            return $this->responseNoContent('exercise deleted');
         } catch (\Throwable $th) {
-            abort(400, 'delete exercise is error');
+            abort(Response::HTTP_BAD_REQUEST, $th->getMessage());
         }
     }
 }

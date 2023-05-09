@@ -76,9 +76,13 @@ export function registerGlobalComponents(app) {
     defineAsyncComponent(() => import("primevue/confirmdialog"))
   );
 
-  //==========overlay==========
+  //==========misc==========
   app.component(
     "Badge",
     defineAsyncComponent(() => import("primevue/badge"))
+  );
+  app.component(
+    "Tag",
+    defineAsyncComponent(() => import("primevue/tag"))
   );
 }

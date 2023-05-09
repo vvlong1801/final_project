@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Models\Exercise;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\File;
 
 class StoreExerciseRequest extends FormRequest
 {
@@ -36,12 +37,14 @@ class StoreExerciseRequest extends FormRequest
             'type' => '',
             'evaluate_method' => 'required',
             'equipment_id' => '',
-            'group_exercises' => '',
+            'group_tags' => 'array',
             'muscles' => 'required',
             'description' => '',
-            'gif' => 'required',
+            'gif.filename' => 'required|exists:media,name',
+            'gif.path' => 'required|exists:media,path',
+            'image.filename' => 'required|exists:media,name',
+            'image.path' => 'required|exists:media,path',
             'video' => '',
-            'image' => 'required',
         ];
     }
 }

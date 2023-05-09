@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UploadRequest;
 use App\Http\Resources\MediaResource;
 use App\Services\Interfaces\MediaServiceInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class MediaController extends Controller
 {
@@ -19,10 +20,13 @@ class MediaController extends Controller
      */
     public function upload(UploadRequest $request)
     {
-        $payload = $request->validated();
-        $media = $this->mediaService->upload($payload);
-
-        return $this->getResponse(new MediaResource($media), 'upload is success');
+        try {
+            $payload = $request->validated();
+            $media = $this->mediaService->upload($payload);
+            return $this->responseOk(new MediaResource($media), 'upload is success');
+        } catch (\Throwable $th) {
+            abort(Response::HTTP_BAD_REQUEST);
+        }
     }
 
     public function getTempUrl(String $collection, String $filename)

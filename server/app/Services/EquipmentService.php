@@ -19,30 +19,41 @@ class EquipmentService extends BaseService implements EquipmentServiceInterface
 
     public function createEquipment(array $payload)
     {
-        $equipment = Equipment::create(\Arr::only($payload, ['name', 'description']));
+        \DB::beginTransaction();
+        try {
+            $equipment = Equipment::create(\Arr::only($payload, ['name', 'description']));
 
-        $equipment->image()->save($payload['image']);
+            $equipment->image()->save($payload['image']);
 
-        if ($payload['icon']) {
-            $equipment->icon()->save($payload['icon']);
+            if ($payload['icon']) {
+                $equipment->icon()->save($payload['icon']);
+            }
+            \DB::commit();
+        } catch (\Throwable $th) {
+            \DB::rollback();
+            throw $th;
         }
-        return $equipment;
     }
 
     public function updateEquipment($id, array $payload)
     {
-        $equipment = Equipment::find($id);
-        $equipment->name = \Arr::get($payload, 'name', '');
-        $equipment->description = \Arr::get($payload, 'description', '');
-        $equipment->save();
-        if ($image = \Arr::get($payload, 'image', false)) {
-            $equipment->image()->update($image->getAttributes());
-        }
-        if ($icon = \Arr::get($payload, 'icon', false)) {
-            $equipment->icon()->update($icon->getAttributes());
+        try {
+            $equipment = Equipment::findOrFail($id);
+            $equipment->name = \Arr::get($payload, 'name', '');
+            $equipment->description = \Arr::get($payload, 'description', '');
+            $equipment->save();
+            if ($image = \Arr::get($payload, 'image', false)) {
+                $equipment->image()->update($image->getAttributes());
+            }
+            if ($icon = \Arr::get($payload, 'icon', false)) {
+                $equipment->icon()->update($icon->getAttributes());
+            }
+        } catch (\Throwable $th) {
+            throw new \Exception("not found model", 1);
         }
 
-        return $equipment;
+
+        return true;
     }
 
     public function deleteEquipment($id)

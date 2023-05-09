@@ -16,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
         Services\Interfaces\ChallengeServiceInterface::class => Services\ChallengeService::class,
         Services\Interfaces\EquipmentServiceInterface::class => Services\EquipmentService::class,
         Services\Interfaces\MuscleServiceInterface::class => Services\MuscleService::class,
-        Services\Interfaces\MediaServiceInterface::class => Services\LocalService::class,
+        Services\Interfaces\MediaServiceInterface::class => Services\MediaServices\LocalService::class,
     ];
     /**
      * Register any application services.

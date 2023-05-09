@@ -7,7 +7,6 @@ use App\Http\Controllers\Admin\ChallengeController;
 use App\Http\Controllers\Admin\EnumController;
 use App\Http\Controllers\Admin\EquipmentController;
 use App\Http\Controllers\Admin\ExerciseController;
-use App\Http\Controllers\Admin\GroupExerciseController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MuscleController;
 
@@ -42,18 +41,13 @@ Route::middleware('auth:sanctum')->group(function () {
     //=============== Group Exercise ===============
 
     //=============== Exercise ===============
-    Route::get('/exercises/groups', [ExerciseController::class, 'getGroups']);
-    Route::get('/exercises/find/{id}', [ExerciseController::class, 'findById']);
+    Route::get('/exercises/show/{id}', [ExerciseController::class, 'show']);
     Route::get('/exercises/{per_page?}', [ExerciseController::class, 'index']);
-    Route::post('/exercises/delete', [ExerciseController::class, 'delete']);
+    Route::post('/exercises/search', [ExerciseController::class, 'search']);
     Route::post('/exercises', [ExerciseController::class, 'create']);
     Route::put('/exercises/{id}', [ExerciseController::class, 'update']);
-    //=============== Exercise ===============
-    Route::get('/exercises/find/{id}', [ExerciseController::class, 'findById']);
-    Route::get('/exercises/{per_page?}', [ExerciseController::class, 'index']);
-    Route::post('/exercises/delete', [ExerciseController::class, 'delete']);
-    Route::post('/exercises', [ExerciseController::class, 'create']);
-    Route::put('/exercises/{id}', [ExerciseController::class, 'update']);
+    Route::delete('/exercises', [ExerciseController::class, 'destroy']);
+
     //=============== Equipments ===============
     Route::get('/equipments', [EquipmentController::class, 'index']);
     Route::post('/equipments', [EquipmentController::class, 'create']);
@@ -69,7 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //=============== Challenge ===============
     Route::get('/challenges', [ChallengeController::class, 'index']);
     Route::get('/challenges/types', [ChallengeController::class, 'getChallengeTypes']);
-    Route::get('/challenges/{id}', [ChallengeController::class, 'findById']);
+    Route::get('/challenges/{id}', [ChallengeController::class, 'show']);
     Route::post('/challenges', [ChallengeController::class, 'create']);
     Route::put('/challenges/{id}', [ChallengeController::class, 'update']);
     Route::delete('/challenges/{id}', [ChallengeController::class, 'delete']);

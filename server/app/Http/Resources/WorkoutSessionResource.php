@@ -16,7 +16,7 @@ class WorkoutSessionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'exercises' => SessionExerciseResource::collection($this->sessionExercises),
+            'exercises' => SessionExerciseResource::collection($this->whenLoaded('sessionExercises')),
             'order' => $this->order,
             'name' => $this->name,
         ];

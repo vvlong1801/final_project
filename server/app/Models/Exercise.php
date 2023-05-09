@@ -4,11 +4,10 @@ namespace App\Models;
 
 use App\Enums\EvaluateMethod;
 use App\Enums\Level;
-use App\Enums\MediaType;
 use App\Enums\Role;
-use App\Supports\Helper;
+use App\Enums\TypeMedia;
+use App\Enums\TypeTag;
 use Exception;
-use GuzzleHttp\Promise\Create;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -45,17 +44,17 @@ class Exercise extends Model
 
     public function image()
     {
-        return $this->morphOne(Media::class, 'mediable')->whereType(MediaType::image);
+        return $this->morphOne(Media::class, 'mediable')->whereType(TypeMedia::Image);
     }
 
     public function gif()
     {
-        return $this->morphOne(Media::class, 'mediable')->whereType(MediaType::gif);
+        return $this->morphOne(Media::class, 'mediable')->whereType(TypeMedia::Gif);
     }
 
     public function video()
     {
-        return $this->morphOne(Media::class, 'mediable')->whereType(MediaType::video);
+        return $this->morphOne(Media::class, 'mediable')->whereType(TypeMedia::Video);
     }
 
     public function muscles()
@@ -68,9 +67,9 @@ class Exercise extends Model
         return $this->belongsToMany(Challenge::class);
     }
 
-    public function groupExercises()
+    public function groupTags()
     {
-        return $this->belongsToMany(GroupExercise::class);
+        return $this->belongsToMany(Tag::class, 'exercise_group_tag')->whereType(TypeTag::GroupExercise);
     }
 
     public function createdBy()
@@ -88,4 +87,7 @@ class Exercise extends Model
     {
         return $this->hasMany(SessionExercise::class);
     }
+
+    //=========== create scope ==========
+    //===================================
 }

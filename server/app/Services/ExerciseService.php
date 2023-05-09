@@ -2,21 +2,44 @@
 
 namespace App\Services;
 
+use App\Enums\TypeTag;
 use App\Models\Exercise;
-use App\Models\GroupExercise;
+use App\Models\Tag;
 use App\Services\Interfaces\ExerciseServiceInterface;
-
+use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class ExerciseService extends BaseService implements ExerciseServiceInterface
 {
     public function getExercises()
     {
-        return Exercise::with(['gif', 'image', 'video', 'groupExercises'])->get();
+        return Exercise::with(['groupTags', 'createdBy'])->get();
     }
 
-    public function getGroupExercises()
+    public function getExercisesByFilters($payload, $createdBy)
     {
-        return GroupExercise::select(['id', 'name'])->get();
+        // filter by group exercise
+        $groupTags = \Arr::first($payload, fn ($item) => ($item['dimension'] === 'groups') && count($item['value']), false);
+        $query = Exercise::whereCreatedBy($createdBy)
+            ->when($groupTags, function (Builder $query, $groupTags) {
+                $query->whereRelation('groupTags', function (Builder $query) use ($groupTags) {
+                    $query->whereIn('name', $groupTags['value']);
+                });
+            });
+        // filter by muscle
+        $muscles = \Arr::first($payload, fn ($item) => ($item['dimension'] === 'muscles') && count($item['value']), false);
+        $query = $query->when($muscles, function (Builder $query, $muscles) {
+            $query->whereRelation('muscles', function (Builder $query) use ($muscles) {
+                $query->whereIn('id', $muscles['value']);
+            });
+        });
+        // filter by equipment
+        $equipments = \Arr::first($payload, fn ($item) => ($item['dimension'] === 'equipments') && count($item['value']), false);
+        $query = $query->when($equipments, function (Builder $query, $equipments) {
+            $query->whereRelation('equipment', function (Builder $query) use ($equipments) {
+                $query->whereIn('id', $equipments['value']);
+            });
+        });
+        return $query->get();
     }
 
     public function getExercisesWithPagination($perPage)
@@ -26,39 +49,29 @@ class ExerciseService extends BaseService implements ExerciseServiceInterface
 
     public function getExerciseById($id)
     {
-        return Exercise::findOrFail($id);
+        return Exercise::with(['groupTags', 'createdBy', 'gif', 'image', 'video', 'muscles', 'equipment'])->findOrFail($id);
     }
 
     public function createExercise(array $payload)
     {
         \DB::beginTransaction();
         try {
+            // insert exercise info
             $exercise = Exercise::create(\Arr::only($payload, ['name', 'level', 'created_by', 'evaluate_method', 'equipment_id', 'description']));
+            $exercise->muscles()->attach($payload['muscles']);
 
+            // insert media of exercise
             $exercise->gif()->save($payload['gif']);
             $exercise->image()->save($payload['image']);
             if ($payload['video']) $exercise->video()->save($payload['video']);
 
-            $exercise->muscles()->attach(\Arr::get($payload, 'muscles', []));
-
-            $groupCollect = collect(\Arr::get($payload, 'group_exercises', []))->groupBy(function ($item, $key) {
-                return \Arr::exists($item, 'id') ? 'existed' : 'not_existed';
-            });
-
-            if ($groupCollect->get('not_existed') !== null) {
-                $notExistedGroups = $groupCollect->get('not_existed')->map(function ($item) use ($payload) {
-                    $item['created_by'] = $payload['created_by'];
-                    return $item;
-                })->all();
-                $exercise->groupExercises()->createMany($notExistedGroups);
-            }
-
-            if ($groupCollect->get('existed') !== null) {
-                $exercise->groupExercises()->attach($groupCollect->get('existed')->pluck('id')->all());
-            }
+            // resolve group tags
+            // == if tag_name && type = group_exercise is existed then ignore
+            // == if tag_name isn't existed then create
+            $ids = Tag::createOrIgnore(TypeTag::GroupExercise, $payload['group_tags']);
+            $exercise->groupTags()->attach($ids);
 
             \DB::commit();
-            return true;
         } catch (\Exception $e) {
             \DB::rollback();
             throw $e;
@@ -70,43 +83,34 @@ class ExerciseService extends BaseService implements ExerciseServiceInterface
         \DB::beginTransaction();
         try {
             $exercise = Exercise::findOrFail($id);
-            $exercise->update(\Arr::only($payload, ['name', 'level', 'created_by', 'evaluate_method', 'equipment_id', 'description']));
-            $exercise->gif()->update($payload['gif']->getAttributes());
-            $exercise->image()->update($payload['image']->getAttributes());
-            if ($payload['video']) $exercise->video()->update($payload['video']->getAttributes());
-
             $exercise->muscles()->sync(\Arr::get($payload, 'muscles', []));
 
-            $groupCollect = collect(\Arr::get($payload, 'group_exercises', []))->groupBy(function ($item, $key) {
-                return \Arr::exists($item, 'id') ? 'existed' : 'not_existed';
-            });
+            $exercise->update(\Arr::only($payload, ['name', 'level', 'created_by', 'evaluate_method', 'equipment_id', 'description']));
+
+            if ($gif = $payload['gif']) {
+                $exercise->gif()->update($gif->getAttributes());
+            }
+            if ($image = $payload['image']) {
+                $exercise->image()->update($image->getAttributes());
+            }
+            if ($video = $payload['video']) {
+                $exercise->video()->update($video->getAttributes());
+            }
 
 
-            if ($groupCollect->get('not_existed') !== null) {
-                $notExistedGroups = $groupCollect->get('not_existed')->map(function ($item) use ($payload) {
-                    $item['created_by'] = $payload['created_by'];
-                    return $item;
-                })->all();
-                $exercise->groupExercises()->createMany($notExistedGroups);
-            }
-            if ($groupCollect->get('existed') !== null) {
-                // dd($exercise->groupExercises()->sync($groupCollect->get('existed')->pluck('id')->all()));
-                $exercise->groupExercises()->sync($groupCollect->get('existed')->pluck('id')->all());
-            }
+            $ids = Tag::createOrIgnore(TypeTag::GroupExercise, $payload['group_tags']);
+            $exercise->groupTags()->attach($ids);
+
             \DB::commit();
-            return true;
         } catch (\Throwable $th) {
             \DB::rollback();
             throw $th;
         }
-
-
-        return $exercise;
     }
 
     public function deleteExercise($ids)
     {
         $result = Exercise::whereIn('id', $ids)->delete();
-        if (!$result) throw new \Exception("delete is error");
+        if (!$result) throw new \Exception("not found resource to delete");
     }
 }

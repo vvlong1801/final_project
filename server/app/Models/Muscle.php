@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\MediaType;
+use App\Enums\TypeMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,11 +19,11 @@ class Muscle extends Model
 
     public function image()
     {
-        return $this->morphOne(Media::class, 'mediable')->whereType(MediaType::image);
+        return $this->morphOne(Media::class, 'mediable')->whereType(TypeMedia::Image);
     }
 
     public function icon()
     {
-        return $this->morphOne(Media::class, 'mediable')->whereType(MediaType::icon);
+        return $this->morphOne(Media::class, 'mediable')->whereType(TypeMedia::Icon);
     }
 }

@@ -7,9 +7,7 @@ use App\Models\Challenge;
 use App\Models\ChallengePhase;
 use App\Models\ExerciseRequirement;
 use App\Models\SessionExercise;
-use App\Models\WorkoutSession;
 use App\Services\Interfaces\ChallengeServiceInterface;
-use Illuminate\Support\Arr;
 
 class ChallengeService extends BaseService implements ChallengeServiceInterface
 {
@@ -20,7 +18,7 @@ class ChallengeService extends BaseService implements ChallengeServiceInterface
 
     public function getChallengeById($id)
     {
-        $challenge = Challenge::with(['type', 'image'])->withCount('exercises')->whereId($id)->first();
+        $challenge = Challenge::with(['createdBy', 'image', 'phases', 'phases.sessions', 'phases.sessions.sessionExercises'])->whereId($id)->first();
         return $challenge;
     }
 
@@ -37,7 +35,6 @@ class ChallengeService extends BaseService implements ChallengeServiceInterface
             ]));
             $challenge->status = StatusChallenge::init;
             $challenge->save();
-            // dd($challenge->created_by);
 
             $challenge->image()->save($payload['image']);
 
@@ -46,7 +43,6 @@ class ChallengeService extends BaseService implements ChallengeServiceInterface
             $this->createChallengePhase($challenge, $phases);
 
             \DB::commit();
-            return true;
         } catch (\Throwable $th) {
             \DB::rollback();
             throw $th;

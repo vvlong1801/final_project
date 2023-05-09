@@ -1,47 +1,49 @@
 <script setup>
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
 import BaseView from "../BaseView.vue";
-import Tag from "primevue/tag";
 import CardExercise from "./partials/CardExercise.vue";
 
-import { FilterMatchMode } from "primevue/api";
 import { onMounted, ref } from "vue";
 import { useExercise } from "@/stores/exercise";
 import { useConfirm } from "primevue/useconfirm";
 
 const store = useExercise();
 const confirm = useConfirm();
-const dt = ref(null);
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
+
 onMounted(() => {
   store.getExercises();
 });
 
-const exportCSV = (event) => {};
+const confirmDelete = (id) => {
+  confirm.require({
+    message: "Do you want to delete this exercise?",
+    icon: "pi pi-info-circle",
+    acceptClass: "p-button-danger",
+    accept: () => store.deleteExercise(id),
+  });
+};
 
-const confirmDelete = (item) => {
+const confirmBulkDelete = (item) => {
   if (item?.id) {
     store.resetSelected();
     store.selectedExercises.push(item);
   }
   confirm.require({
-    message: "Do you want to delete this exercise?",
+    message: "Do you want to delete selected exercise?",
     header: "Delete Confirmation",
     icon: "pi pi-info-circle",
     acceptClass: "p-button-danger",
     accept: () => {
       store.deleteExercise();
     },
-    reject: () => {
-      store.resetSelected();
-    },
+    // reject: () => {
+    //   store.resetSelected();
+    // },
   });
 };
 </script>
 <template>
+  <Toast />
+  <ConfirmDialog></ConfirmDialog>
   <base-view title="Exercises">
     <div class="card flex flex-col space-y-6 min-h-full">
       <Toolbar>
@@ -57,18 +59,17 @@ const confirmDelete = (item) => {
             label="Delete"
             icon="pi pi-trash"
             class="!bg-red-600 !border-none"
-            @click="(e) => confirmDelete()"
+            @click="(e) => confirmBulkDelete()"
           />
         </template>
       </Toolbar>
       <div class="grid grid-cols-3 gap-6">
-        <card-exercise></card-exercise>
-        <card-exercise></card-exercise>
-        <card-exercise></card-exercise>
-        <card-exercise></card-exercise>
+        <card-exercise
+          v-for="exe in store.exercises"
+          :exercise="exe"
+          @click-delete="confirmDelete"
+        />
       </div>
-      <Toast />
-      <ConfirmDialog></ConfirmDialog>
     </div>
   </base-view>
 </template>

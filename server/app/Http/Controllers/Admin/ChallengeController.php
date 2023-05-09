@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\MediaCollection;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreChallengeRequest;
 use App\Http\Resources\ChallengeResource;
@@ -24,7 +25,7 @@ class ChallengeController extends Controller
     public function index()
     {
         $challenges = $this->challengeService->getChallenges();
-        return $this->getResponse(ChallengeResource::collection($challenges), 'get challenges is success');
+        return $this->responseOk(ChallengeResource::collection($challenges), 'get challenges is success');
     }
 
     /**
@@ -34,20 +35,25 @@ class ChallengeController extends Controller
     {
         $payload = $request->validated();
         $image = \Arr::get($payload, 'image', null);
-        $payload['image'] = $mediaService->createMedia($image);
-        $payload['created_by'] = $request->user()->id;
-        $challenge = $this->challengeService->createChallenge($payload);
+        try {
+            $payload['image'] = $mediaService->createMedia($image, MediaCollection::Challenge);
+            $payload['created_by'] = $request->user()->id;
+            $this->challengeService->createChallenge($payload);
 
-        return $this->getResponse(new ChallengeResource($challenge), 'challenge created');
+            return $this->responseNoContent('challenge created');
+        } catch (\Throwable $th) {
+            abort(400, 'errr');
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function findById($id)
+    public function show($id)
     {
         $challenge = $this->challengeService->getChallengeById($id);
-        return $this->getResponse(new ChallengeResource($challenge), 'get challenge is success');
+        if (!$challenge) abort(404, 'not founded this challenge');
+        return $this->responseOk(new ChallengeResource($challenge), 'get challenge is success');
     }
 
 
@@ -58,7 +64,7 @@ class ChallengeController extends Controller
     {
         $payload = $request->validated();
         $image = \Arr::get($payload, 'image', false);
-        $payload['image'] = $image ? $mediaService->createMedia($image) : null;
+        $payload['image'] = $mediaService->updateMedia($image, MediaCollection::Challenge);
         $challenge = $this->challengeService->updateChallenge($id, $payload);
 
         return $this->getResponse(new ChallengeResource($challenge), 'challenge updated');

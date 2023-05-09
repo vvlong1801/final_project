@@ -23,8 +23,10 @@ class StoreEquipmentRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'image' => 'required',
-            'icon' => '',
+            'image.filename' => 'required|exists:media,name',
+            'image.path' => 'required|exists:media,path',
+            'icon.filename' => 'exists:media,name',
+            'icon.path' => 'exists:media,path',
             'description' => '',
         ];
     }

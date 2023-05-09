@@ -18,14 +18,14 @@ class ChallengeResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'type' => $this->type,
-            'image' => new MediaResource($this->image),
+            'image' => new MediaResource($this->whenLoaded('image')),
             'description' => $this->description,
-            'created_by' => $this->createdBy->name,
+            'created_by' => $this->whenLoaded('createdBy', $this->createdBy->name),
             'max_member' => $this->max_member,
             'commit_point' => $this->commit_point,
             'status' => $this->status,
             'released_at' => $this->released_at,
-            'phases' => ChallengePhaseResource::collection($this->phases),
+            'phases' => ChallengePhaseResource::collection($this->whenLoaded('phases')),
         ];
     }
 }

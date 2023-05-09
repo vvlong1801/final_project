@@ -18,7 +18,6 @@ export const useExercise = defineStore("exercise", () => {
   const validationSchema = Yup.object({
     name: Yup.string().required(),
     level: Yup.object().required(),
-    // type: Yup.object().required(),
     evaluate_method: Yup.string().required(),
     muscles: Yup.array().required(),
     image: Yup.object().required(),
@@ -146,10 +145,11 @@ export const useExercise = defineStore("exercise", () => {
     }
   );
 
-  const deleteExercise = () => {
-    const ids = selectedExercises.value.map((ex) => ex.id);
+  const deleteExercise = (id) => {
+    const ids = id ?? selectedExercises.value.map((ex) => ex.id);
+    console.log(ids);
     window.axios
-      .post("exercises/delete", { ids })
+      .delete("exercises", { ids })
       .then((res) => {
         showToast("success", res.message);
         getExercises();

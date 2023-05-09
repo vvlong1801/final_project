@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('exercise_group_exercise', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('group_exercise_id')->constrained()->cascadeOnDelete();
+        Schema::create('exercise_group_tag', function (Blueprint $table) {
+            $table->unsignedBigInteger('tag_id');
+            $table->foreign('tag_id')->references('id')->on('tags')->cascadeOnDelete();
             $table->foreignId('exercise_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

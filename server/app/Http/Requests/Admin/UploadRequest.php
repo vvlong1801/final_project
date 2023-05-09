@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Requests\Admin;
-
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\File;
 
 class UploadRequest extends FormRequest
 {
@@ -22,9 +22,10 @@ class UploadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => 'required',
-            'collection' => 'required',
-            'type' => 'required',
+            'file' => [
+                'required',
+                File::types(['jpg', 'jpeg', 'png', 'gif'])
+            ],
         ];
     }
 }

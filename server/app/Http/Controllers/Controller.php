@@ -5,24 +5,26 @@ namespace App\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Symfony\Component\HttpFoundation\Response;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
-    public function getResponse($data, $message, $status = 200)
+
+    public function responseOk($data, $message = "success")
     {
         return response()->json([
             'data' => $data,
             'message' => $message,
-            'status' => $status,
+            'status' => Response::HTTP_OK,
         ]);
     }
 
-    public function responseOk($data, $message = "success"){
+    public function responseNoContent($message = '')
+    {
         return response()->json([
-            'data' => $data,
             'message' => $message,
-            'status' => 200,
+            'status' => Response::HTTP_NO_CONTENT,
         ]);
     }
 }

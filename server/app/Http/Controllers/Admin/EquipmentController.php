@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\MediaCollection;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreEquipmentRequest;
 use App\Http\Resources\EquipmentResource;
@@ -21,41 +22,41 @@ class EquipmentController extends Controller
     public function index()
     {
         $equipments = $this->equipmentService->getEquipments();
-        return $this->getResponse(EquipmentResource::collection($equipments), 'get equipments is success!');
+        return $this->responseOk(EquipmentResource::collection($equipments), 'get equipments is success!');
     }
 
     public function create(StoreEquipmentRequest $request)
     {
         $payload = $request->validated();
-        $image = \Arr::get($payload, 'image', false);
         $icon = \Arr::get($payload, 'icon', false);
-
-        $payload['image'] = $image ? $this->mediaService->createMedia($image) : null;
-        $payload['icon'] = $icon ? $this->mediaService->createMedia($icon) : null;
-
-        if ($payload['image'] !== null) {
-            $equipment = $this->equipmentService->createEquipment($payload);
-            return $this->getResponse(new EquipmentResource($equipment), 'create equipment is success!');
-        } else {
-            abort(422, 'image not found');
+        try {
+            $payload['image'] = $this->mediaService->createMedia($payload['image'], MediaCollection::Equipment);
+            $payload['icon'] = $icon ? $this->mediaService->createMedia($icon, MediaCollection::Equipment) : null;
+            $this->equipmentService->createEquipment($payload);
+            return $this->responseNoContent('create equipment is success!');
+        } catch (\Throwable $th) {
+            abort(400, $th->getMessage());
         }
     }
 
     public function update($id, StoreEquipmentRequest $request)
     {
         $payload = $request->validated();
-        $image = \Arr::get($payload, 'image', false);
         $icon = \Arr::get($payload, 'icon', false);
-        $payload['image'] = $image ? $this->mediaService->createMedia($image) : null;
-        $payload['icon'] = $icon ? $this->mediaService->createMedia($icon) : null;
-
-        $equipment = $this->equipmentService->updateEquipment($id, $payload);
-        return $this->getResponse(new EquipmentResource($equipment), 'update equipment is success!');    }
+        try {
+            $payload['image'] = $this->mediaService->updateMedia($payload['image'], MediaCollection::Equipment);
+            $payload['icon'] = $icon ? $this->mediaService->updateMedia($icon, MediaCollection::Equipment) : null;
+            $this->equipmentService->updateEquipment($id, $payload);
+            return $this->responseNoContent('update equipment is success!');
+        } catch (\Throwable $th) {
+            abort(400, $th->getMessage());
+        }
+    }
 
     public function delete($id)
     {
         $this->equipmentService->deleteEquipment($id);
 
-        return $this->getResponse(null, 'delete equipment is success!');
+        return $this->responseNoContent('delete equipment is success!');
     }
 }
