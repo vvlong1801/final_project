@@ -15,6 +15,10 @@ class Tag extends Model
         'type' => TypeTag::class,
     ];
 
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
     public function scopeCreateOrIgnore(
         Builder $query,
         TypeTag $type,

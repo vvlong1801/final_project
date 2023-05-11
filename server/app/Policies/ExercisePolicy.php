@@ -44,8 +44,9 @@ class ExercisePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Exercise $exercise): bool
+    public function delete(User $user, $id): bool
     {
+        $exercise = Exercise::findOrFail($id);
         return $user->id === $exercise->created_by || $user->hasAdminPermissions;
     }
 

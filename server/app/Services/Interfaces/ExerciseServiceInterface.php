@@ -5,6 +5,7 @@ namespace App\Services\Interfaces;
 interface ExerciseServiceInterface
 {
     public function getExercises();
+    public function getGroupTags();
     public function getExercisesByFilters($payload, $createdBy);
     public function getExerciseById($id);
     public function getExercisesWithPagination($perPage);

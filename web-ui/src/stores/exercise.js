@@ -4,7 +4,8 @@ import { useToast } from "primevue/usetoast";
 import { useRouter } from "vue-router";
 import { useForm } from "vee-validate";
 import * as Yup from "yup";
-import { levelTypes, exerciseTypes, getOption } from "@/utils/option";
+import { TYPE_LEVEL, EVALUATE_METHOD, getOption } from "@/utils/option";
+import * as ExerciseAPI from "@/services/exercise";
 
 export const useExercise = defineStore("exercise", () => {
   const router = useRouter();
@@ -14,11 +15,13 @@ export const useExercise = defineStore("exercise", () => {
   const selectedExercises = ref([]);
   const toast = useToast();
   const editItem = ref({});
+  const groupTags = ref([]);
 
   const validationSchema = Yup.object({
     name: Yup.string().required(),
     level: Yup.object().required(),
     evaluate_method: Yup.string().required(),
+    group_tags: Yup.array(),
     muscles: Yup.array().required(),
     image: Yup.object().required(),
     gif: Yup.object().required(),
@@ -26,10 +29,10 @@ export const useExercise = defineStore("exercise", () => {
 
   const initialValues = {
     name: "",
-    level: null,
+    level: TYPE_LEVEL.easy,
     type: null,
-    evaluate_method: null,
-    group_exercise: null,
+    evaluate_method: EVALUATE_METHOD.repitition,
+    group_tags: null,
     equipment: null,
     description: "",
     muscles: null,
@@ -58,46 +61,44 @@ export const useExercise = defineStore("exercise", () => {
   const convertResToData = (res) => {
     if (res instanceof Array) {
       const result = res.map((item) => {
-        item.type = getOption(exerciseTypes, item.type);
-        item.level = getOption(levelTypes, item.level);
+        item.type = getOption(EVALUATE_METHOD, item.type);
+        item.level = getOption(TYPE_LEVEL, item.level);
         return item;
       });
       return result;
     } else {
-      res.type = getOption(exerciseTypes, res.type);
-      res.level = getOption(levelTypes, res.level);
+      res.type = getOption(EVALUATE_METHOD, res.type);
+      res.level = getOption(TYPE_LEVEL, res.level);
       return res;
     }
   };
 
-  const getExercises = () => {
-    return window.axios
-      .get("exercises")
-      .then((res) => {
-        exercises.value = convertResToData(res.data);
-      })
-      .catch((err) => {});
+  const getExercises = async () => {
+    try {
+      const res = await ExerciseAPI.onGetExercises();
+      exercises.value = convertResToData(res?.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const getExercisesWithPagination = (pageNum = 1) => {
-    return window.axios
-      .get(`exercises/12?page=${pageNum}`)
-      .then((res) => {
-        exercises.value = res.data.data;
-        pagination.value = res.data.pagination;
-      })
-      .catch((err) => {});
+  const getGroupTags = async () => {
+    try {
+      const res = await ExerciseAPI.onGetGroupTags();
+      groupTags.value = res.data;
+      console.log(groupTags.value);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const getExerciseById = async (id) => {
-    await window.axios
-      .get(`exercises/find/${id}`)
-      .then((res) => {
-        editItem.value = convertResToData(res.data);
-      })
-      .catch((err) => {
-        showToast("error", err.response.data.message);
-      });
+    try {
+      const res = await ExerciseAPI.onGetExerciseById(id);
+      editItem.value = convertResToData(res?.data);
+    } catch (error) {
+      showToast("error", err.response.data.message);
+    }
   };
 
   const createExercise = form.handleSubmit(
@@ -138,37 +139,34 @@ export const useExercise = defineStore("exercise", () => {
           resetForm();
         })
         .catch((err) => {
-          console.log(err);
           setErrors(err.response.data);
           showToast("error", err.response.data.message);
         });
     }
   );
 
-  const deleteExercise = (id) => {
-    const ids = id ?? selectedExercises.value.map((ex) => ex.id);
-    console.log(ids);
-    window.axios
-      .delete("exercises", { ids })
-      .then((res) => {
-        showToast("success", res.message);
-        getExercises();
-      })
-      .catch((err) => {
-        showToast("error", err.response.data.message);
-      })
-      .finally(resetSelected);
+  const deleteExercise = async (id) => {
+    try {
+      const res = await ExerciseAPI.onDeleteExercise(id);
+      showToast("success", res?.message);
+      getExercises();
+    } catch (error) {
+      showToast("error", error.response.data.message);
+    } finally {
+      resetSelected();
+    }
   };
 
   return {
     exercises,
+    groupTags,
     pagination,
     selectedExercises,
     form,
     resetSelected,
     filtered,
     getExercises,
-    getExercisesWithPagination,
+    getGroupTags,
     getExerciseById,
     editItem,
     createExercise,

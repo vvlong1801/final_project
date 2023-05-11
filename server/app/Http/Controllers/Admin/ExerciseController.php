@@ -6,6 +6,8 @@ use App\Enums\MediaCollection;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreExerciseRequest;
 use App\Http\Resources\ExerciseResource;
+use App\Http\Resources\TagResource;
+use App\Models\Exercise;
 use App\Services\Interfaces\ExerciseServiceInterface;
 use App\Services\Interfaces\MediaServiceInterface;
 use Illuminate\Http\Request;
@@ -26,15 +28,23 @@ class ExerciseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(int $perPage = 0)
+    public function index()
     {
-        if ($perPage) {
-            $exercises = $this->exerciseService->getExercisesWithPagination($perPage);
-            return $this->responseOk(ExerciseResource::collection($exercises), 'get exercises is success');
-        } else {
-            $exercises = $this->exerciseService->getExercises();
-            return $this->responseOk(ExerciseResource::collection($exercises), 'get exercises is success');
-        }
+
+        $exercises = $this->exerciseService->getExercises();
+        return $this->responseOk(ExerciseResource::collection($exercises), 'get exercises is success');
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getGroupTags()
+    {
+
+        $groupTags = $this->exerciseService->getGroupTags();
+        return $this->responseOk(TagResource::collection($groupTags), 'get exercises is success');
     }
 
     public function search(Request $payload)
@@ -116,10 +126,27 @@ class ExerciseController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param  Exercise  $exercise
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        try {
+            $this->authorize('delete', [Exercise::class, $id]);
+            $this->exerciseService->deleteExercise([$id]);
+            return $this->responseNoContent('exercise deleted');
+        } catch (\Throwable $th) {
+            abort(Response::HTTP_BAD_REQUEST, $th->getMessage());
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function bulkDestroy(Request $request)
     {
         $ids = $request->validate(['*' => 'numeric']);
         $request->user()->can('bulkDelete', [Exercise::class, $ids]);

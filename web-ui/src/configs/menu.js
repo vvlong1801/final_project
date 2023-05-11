@@ -5,7 +5,7 @@ export const appMenu = [
       {
         label: "Dashboard",
         icon: "pi pi-fw pi-home",
-        to: "/",
+        to: "/dashboard",
       },
     ],
   },

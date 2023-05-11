@@ -37,22 +37,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/upload', [MediaController::class, 'upload']);
     //=============== User ===================
     //=============== Type ===================
-    Route::get('/types/{name}', [EnumController::class, 'getType']);
+
     //=============== Group Exercise ===============
 
     //=============== Exercise ===============
-    Route::get('/exercises/show/{id}', [ExerciseController::class, 'show']);
-    Route::get('/exercises/{per_page?}', [ExerciseController::class, 'index']);
+    Route::get('/exercises', [ExerciseController::class, 'index']);
+    Route::get('/exercises/group_tags', [ExerciseController::class, 'getGroupTags']);
+    Route::get('/exercises/{id}', [ExerciseController::class, 'show']);
     Route::post('/exercises/search', [ExerciseController::class, 'search']);
     Route::post('/exercises', [ExerciseController::class, 'create']);
     Route::put('/exercises/{id}', [ExerciseController::class, 'update']);
-    Route::delete('/exercises', [ExerciseController::class, 'destroy']);
+    Route::delete('/exercises/{id}', [ExerciseController::class, 'destroy']);
 
     //=============== Equipments ===============
     Route::get('/equipments', [EquipmentController::class, 'index']);
     Route::post('/equipments', [EquipmentController::class, 'create']);
     Route::put('/equipments/{id}', [EquipmentController::class, 'update']);
-    Route::delete('/equipments/{id}', [EquipmentController::class, 'delete']);
+    Route::delete('/equipments/{exercise}', [EquipmentController::class, 'delete']);
 
     //=============== Muscles ===============
     Route::get('/muscles', [MuscleController::class, 'index']);

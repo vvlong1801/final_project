@@ -26,7 +26,7 @@ const router = createRouter({
       beforeEnter: auth,
       children: [
         {
-          path: "/",
+          path: "/dashboard",
           name: "dashboard",
           component: () => import("@/views/Dashboard.vue"),
         },

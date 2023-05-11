@@ -15,14 +15,14 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  parentItemKey: {
-    type: String,
-    default: null,
-  },
+  // parentItemKey: {
+  //   type: String,
+  //   default: null,
+  // },
 });
 
 const checkActiveItem = (item) => {
-  return route.path === item.to;
+  return route.path.includes(item.to);
 };
 </script>
 <template>
@@ -54,7 +54,7 @@ const checkActiveItem = (item) => {
           :key="child"
           :index="i"
           :item="child"
-          :parentItemKey="itemKey"
+
           :root="false"
         ></app-menu-item>
       </ul>

@@ -15,6 +15,11 @@ class ExerciseService extends BaseService implements ExerciseServiceInterface
         return Exercise::with(['groupTags', 'createdBy'])->get();
     }
 
+    public function getGroupTags()
+    {
+        return Tag::whereType(TypeTag::GroupExercise)->get();
+    }
+
     public function getExercisesByFilters($payload, $createdBy)
     {
         // filter by group exercise

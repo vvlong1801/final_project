@@ -14,9 +14,11 @@ class TagResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // dd($this->whenLoaded('createdBy', $this->createdBy->name));
         return [
             'id' => $this->id,
             'name' => $this->name,
+            // 'created_by' => $this->whenLoaded('createdBy'),
         ];
     }
 }

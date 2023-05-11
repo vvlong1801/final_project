@@ -4,17 +4,7 @@ import { defineProps } from "vue";
 const props = defineProps(["exercise"]);
 </script>
 <template>
-  <div
-    class="card h-28 p-4 flex gap-4"
-    @click="
-      $router.push({
-        name: 'exercises.show',
-        params: {
-          id: 1,
-        },
-      })
-    "
-  >
+  <div class="card h-28 p-4 flex gap-4">
     <img
       src="@/assets/images/panel.jpg"
       alt="abc"
@@ -26,9 +16,9 @@ const props = defineProps(["exercise"]);
         <div class="space-x-2">
           <i
             class="pi pi-pencil cursor-pointer"
-            @click.stop="
+            @click="
               $router.push({
-                name: 'exercises.edit',
+                name: 'exercises.show',
                 params: {
                   id: 1,
                 },
@@ -37,12 +27,11 @@ const props = defineProps(["exercise"]);
           ></i>
           <i
             class="pi pi-trash cursor-pointer"
-            @click.stop="$emit('clickDelete', exercise.id)"
+            @click="$emit('clickDelete', exercise.id)"
           ></i>
         </div>
       </div>
       <div class="flex justify-between items-center">
-        <!-- <p class="font-normal text-sm text-gray-500">exercise group</p> -->
         <Tag
           :severity="exercise.level.severity"
           :value="exercise.level.label"
@@ -52,6 +41,5 @@ const props = defineProps(["exercise"]);
         </p>
       </div>
     </div>
-    <!-- <ConfirmPopup></ConfirmPopup> -->
   </div>
 </template>
